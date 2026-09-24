@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "disclaimer": "Policy language paraphrased from publisher help centers. No performance metrics.",
+  "facts": [
+    {
+      "id": "gads-areas",
+      "publisher": "Google Ads Policy Help",
+      "title": "Policy coverage areas",
+      "claim": "Google Ads policies cover four broad areas: prohibited content, prohibited practices, restricted content and features, and editorial and technical quality standards.",
+      "url": "https://support.google.com/adspolicy/answer/6008942"
+    },
+    {
+      "id": "gads-dangerous",
+      "publisher": "Google Ads Policy Help",
+      "title": "Dangerous products or services",
+      "claim": "Google does not allow promotion of some products or services that cause damage, harm, or injury, including recreational drugs, weapons, ammunition, explosives, and tobacco products (non-exhaustive examples in the help article).",
+      "url": "https://support.google.com/adspolicy/answer/6008942"
+    },
+    {
+      "id": "gads-offensive",
+      "publisher": "Google Ads Policy Help",
+      "title": "Inappropriate or offensive content",
+      "claim": "Ads or destinations that display shocking content or promote hatred, intolerance, discrimination, or violence are not allowed.",
+      "url": "https://support.google.com/adspolicy/answer/6008942"
+    },
+    {
+      "id": "gads-english-official",
+      "publisher": "Google Ads Policy Help",
+      "title": "Official policy language",
+      "claim": "Google states that the English version of the Advertising Policies Help Center is the official language used to enforce Google Ads policies.",
+      "url": "https://support.google.com/adspolicy/answer/16992218"
+    },
+    {
+      "id": "gads-limited-serving-2026-08",
+      "publisher": "Google Ads Policy Help",
+      "title": "Limited Ad Serving update (August 2026)",
+      "claim": "In August 2026 Google updated Limited Ad Serving to cover all Google Ads; ads from unqualified advertisers may have impressions limited in scenarios more likely to produce negative ads experiences.",
+      "url": "https://support.google.com/adspolicy/answer/17344822"
+    },
+    {
+      "id": "gads-age-estimation-2026-06",
+      "publisher": "Google Ads Policy Help",
+      "title": "Age-estimation restricted categories (June 2026)",
+      "claim": "While Google is estimating a user's age, it continues to restrict adult content and pornography, alcohol, and gambling. The former Default Ads Treatment policy was renamed to describe this interim protection.",
+      "url": "https://support.google.com/adspolicy/answer/17139202"
+    },
+    {
+      "id": "gads-dangerous-pilot-2026-10",
+      "publisher": "Google Ads Policy Help",
+      "title": "Dangerous products pilot (October 2026)",
+      "claim": "Google announced a limited six-month United States pilot beginning October 2026 to allow ads for certain gun accessories (examples listed: bipods, sights, slings, mounts, and braces) on Search only; ads for firearms, ammunition, and regulated parts remain prohibited, and the pilot does not apply outside the United States or on other surfaces.",
+      "url": "https://support.google.com/adspolicy/answer/17455968"
+    },
+    {
+      "id": "meta-pcp",
+      "publisher": "Meta Transparency Center",
+      "title": "Prohibited Commercial Practices",
+      "claim": "Meta prohibits content and ads that use deceptive commercial practices to mislead people out of money, property, or personal information, including false job or government-program offers, celebrity/brand bait, guaranteed-return investment schemes, debt-relief and credit-repair schemes, get-rich-quick and giveaway schemes, romance schemes, and charity schemes.",
+      "url": "https://transparency.meta.com/policies/community-standards/prohibited-commercial-practices/"
+    },
+    {
+      "id": "meta-pcp-ads",
+      "publisher": "Meta Transparency Center",
+      "title": "Ads must follow PCP community standard",
+      "claim": "Meta Advertising Standards require ads to comply with the Community Standard on Prohibited Commercial Practices.",
+      "url": "https://transparency.meta.com/policies/ad-standards/deceptive-content/prohibited-commercial-practices/"
+    },
+    {
+      "id": "meta-adult-ads",
+      "publisher": "Meta Transparency Center",
+      "title": "Adult nudity and sexual activity in ads",
+      "claim": "Meta ads must not contain imagery depicting nudity, sexual activity, people in explicit or sexually suggestive positions, or sexually suggestive activities; additional 18+ targeting applies to specified health or body-focused imagery.",
+      "url": "https://transparency.meta.com/policies/ad-standards/objectionable-content/adult-nudity-and-sexual-activity/"
+    },
+    {
+      "id": "meta-health-18",
+      "publisher": "Meta Transparency Center",
+      "title": "Health and wellness age restriction",
+      "claim": "Meta restricts advertising that promotes weight-loss or weight-gain products, cosmetic procedures, and dietary or health supplements from targeting users under 18, and bans specified incurable-disease cure claims.",
+      "url": "https://transparency.meta.com/policies/ad-standards/restricted-goods-services/health-wellness/"
+    }
+  ]
+}

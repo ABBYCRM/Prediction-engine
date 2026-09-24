@@ -2,13 +2,13 @@
 
 Local prediction service. The only external inference API is **xAI**. No DigitalOcean deploy in this session (pending Luis approval).
 
-## Status — 2026-09-24 12:03 EDT
+## Status — 2026-09-24 16:20 EDT
 
-- GitHub connector authenticated as `ABBYCRM`. Repo created and pushed via connectors.
-- Only this repo was touched. No DigitalOcean deploy (pending Luis approval).
+- GitHub connector authenticated as `ABBYCRM`. Only this repo was touched. No DigitalOcean deploy (pending Luis approval).
+- Missing engine/API/playbook/tests/frontend assets from earlier cadence were written and pushed.
 - pytest: 9 passed (`PYTHONPATH=src python3 -m pytest`).
-- Ads playbook: 11 sourced facts (Google Ads Policy Help, Google Ads blog 2026-07-09, Meta Transparency Center, Audience Network). No invented metrics.
-- Hardening: scraper SSRF, mailer refuses send without SMTP_HOST/SMTP_FROM, MCP rejects unknown tools and extra keys.
+- Ads playbook: 11 sourced facts (Google Ads Policy Help; Meta Transparency Center community + ad standards). No invented metrics.
+- Hardening: scraper SSRF, mailer refuses send without SMTP_HOST/SMTP_FROM, MCP rejects unknown tools and extra keys, XAI_BASE_URL locked to api.x.ai.
 - Frontend chat: transcript, health pill, Enter-to-send, playbook index.
 
 ## Run
