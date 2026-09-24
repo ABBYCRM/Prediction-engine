@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prediction Engine</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Prediction Engine</h1>
+      <p class="sub">xAI-only inference · sourced ads playbook · no invented metrics</p>
+    </div>
+    <div id="health" class="pill">checking…</div>
+  </header>
+  <main>
+    <section id="transcript" aria-live="polite"></section>
+    <form id="composer">
+      <label class="sr" for="query">Message</label>
+      <textarea id="query" rows="3" maxlength="4000" placeholder="Ask about sourced Google/Meta ads policy facts…"></textarea>
+      <div class="row">
+        <button type="submit" id="send">Send</button>
+        <button type="button" id="facts">List playbook facts</button>
+        <span id="status"></span>
+      </div>
+    </form>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
