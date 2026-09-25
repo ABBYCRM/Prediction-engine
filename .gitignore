@@ -5,6 +5,7 @@ __pycache__/
 .env
 data/analog_hits.jsonl
 data/writeback_ledger.jsonl
+data/outbox_drafts.jsonl
 *.egg-info/
 dist/
 build/
