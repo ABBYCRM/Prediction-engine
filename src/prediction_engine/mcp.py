@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from prediction_engine.analog_store import read_hits
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.playbook import list_facts, match_facts
@@ -15,7 +16,8 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "playbook.match": {"query"},
     "intake.ccfl": {"payload"},
     "intake.ssdi": {"payload"},
-    "engine.predict": {"query"},
+    "engine.predict": {"query", "live_scrape"},
+    "analog.log": {"limit"},
 }
 
 
@@ -46,14 +48,29 @@ def _engine_predict(args: dict[str, Any]) -> dict[str, Any]:
     query = str(args.get("query") or "").strip()
     if not query:
         return {"error": "query_required"}
-    result = PredictionEngine().predict(query)
+    live = bool(args.get("live_scrape"))
+    result = PredictionEngine().predict(query, live_scrape=live)
     return {
         "query": result.query,
         "answer": result.answer,
         "facts": result.facts,
         "used_xai": result.used_xai,
         "note": result.note,
+        "analogs": result.analogs,
+        "scrape": result.scrape,
+        "live_scrape": live,
     }
+
+
+def _analog_log(args: dict[str, Any]) -> dict[str, Any]:
+    raw = args.get("limit", 20)
+    try:
+        limit = int(raw)
+    except (TypeError, ValueError):
+        limit = 20
+    limit = max(1, min(limit, 50))
+    hits = read_hits(limit=limit)
+    return {"count": len(hits), "hits": hits}
 
 
 HANDLERS: dict[str, ToolFn] = {
@@ -62,6 +79,7 @@ HANDLERS: dict[str, ToolFn] = {
     "intake.ccfl": _intake_ccfl,
     "intake.ssdi": _intake_ssdi,
     "engine.predict": _engine_predict,
+    "analog.log": _analog_log,
 }
 
 
