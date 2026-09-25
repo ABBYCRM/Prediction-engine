@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "disclaimer": "Field names and planning parameters copied from public product docs. No performance numbers.",
+  "as_of": "2026-09-25",
+  "contracts": [
+    {
+      "id": "meridian-input-axes",
+      "product": "Google Meridian",
+      "title": "MMM input axes",
+      "fields": ["time", "geo", "kpi", "revenue_per_kpi", "population", "controls", "media_impressions", "media_spend", "organic_media", "non_media_treatments", "reach", "frequency"],
+      "url": "https://developers.google.com/meridian/docs/basics/meridian-introduction",
+      "as_of": "2026-07-09"
+    },
+    {
+      "id": "meridian-unified-schema",
+      "product": "Google Meridian",
+      "title": "Unified Schema marketing data point",
+      "fields": ["geo_info", "date_interval", "kpi", "control_variables", "media_variables", "non_media_variables", "reach_frequency_variables", "media_spend"],
+      "url": "https://developers.google.com/meridian/docs/user-guide/mmm-unified-schema",
+      "as_of": "2026-05-15"
+    },
+    {
+      "id": "robyn-inputs",
+      "product": "Meta Robyn",
+      "title": "robyn_inputs variable classes",
+      "fields": ["date_var", "dep_var", "dep_var_type", "prophet_vars", "context_vars", "paid_media_spends", "paid_media_vars", "organic_vars", "factor_vars", "adstock"],
+      "url": "https://facebookexperimental.github.io/Robyn/docs/features/",
+      "as_of": "2024-12-20"
+    },
+    {
+      "id": "robyn-transforms",
+      "product": "Meta Robyn",
+      "title": "Required media transforms (names only)",
+      "fields": ["adstock_geometric", "adstock_weibull_cdf", "adstock_weibull_pdf", "saturation_hill"],
+      "url": "https://facebookexperimental.github.io/Robyn/docs/features/",
+      "as_of": "2024-12-20"
+    },
+    {
+      "id": "adobe-mix-plan",
+      "product": "Adobe Mix Modeler",
+      "title": "Scenario plan parameters",
+      "fields": ["flight_dates", "total_budget", "channel_budget_constraints", "model_id", "predicted_outcomes"],
+      "url": "https://business.adobe.com/products/mix-modeler/marketing-scenario-planning.html",
+      "as_of": "2026-05-18"
+    },
+    {
+      "id": "gads-performance-planner",
+      "product": "Google Ads Performance Planner",
+      "title": "Planner forecast contract",
+      "fields": ["campaign_selection", "conversion_goal", "forecast_period", "auction_sim_lookback_7_to_10_days", "refresh_about_24h"],
+      "url": "https://support.google.com/google-ads/answer/9230124",
+      "as_of": "2026-09-25"
+    },
+    {
+      "id": "gads-keyword-forecast",
+      "product": "Google Ads API Keyword Forecast",
+      "title": "GenerateKeywordForecastMetrics fields",
+      "fields": ["impressions", "clicks", "cost", "forecast_period", "geo_target_constants", "language_constants"],
+      "url": "https://developers.google.com/google-ads/api/docs/keyword-planning/generate-forecast-metrics",
+      "as_of": "2026-09-23"
+    }
+  ]
+}
