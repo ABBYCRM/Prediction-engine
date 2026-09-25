@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 .env
 data/analog_hits.jsonl
+data/writeback_ledger.jsonl
 *.egg-info/
 dist/
 build/
