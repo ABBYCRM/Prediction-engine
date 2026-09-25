@@ -20,6 +20,7 @@ from prediction_engine.oauth import (
     meta_ads_status,
 )
 from prediction_engine.playbook import list_facts
+from prediction_engine.ledger import ledger_summary, read_ledger
 from prediction_engine.sheets import SheetsError, write_row
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend"
@@ -84,6 +85,11 @@ class Handler(BaseHTTPRequestHandler):
             hits = read_hits(limit=50)
             self._json(200, {"count": len(hits), "hits": hits})
             return
+        if path == "/ledger":
+            summary = ledger_summary()
+            rows = read_ledger(limit=50)
+            self._json(200, {**summary, "rows": rows, "remote": False})
+            return
         if path in {"/", "/index.html"}:
             self._static(FRONTEND / "index.html", "text/html; charset=utf-8")
             return
@@ -110,7 +116,9 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(400, {"error": "query_required"})
                 return
             live = bool(body.get("live_scrape"))
-            result = ENGINE.predict(query, live_scrape=live)
+            house = body.get("house")
+            house_s = str(house).strip() if house else None
+            result = ENGINE.predict(query, live_scrape=live, house=house_s)
             self._json(
                 200,
                 {
@@ -122,6 +130,7 @@ class Handler(BaseHTTPRequestHandler):
                     "analogs": result.analogs,
                     "scrape": result.scrape,
                     "live_scrape": live,
+                    "house": result.house,
                 },
             )
             return
