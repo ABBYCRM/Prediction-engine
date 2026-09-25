@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
 from prediction_engine.mailer import Mailer, MailerError
+
+ROOT = Path(__file__).resolve().parents[2]
+DRAFTS_PATH = ROOT / "data" / "outbox_drafts.jsonl"
 
 
 class OutboxError(MailerError):
@@ -52,3 +59,23 @@ class ResendOutbox:
         result["from"] = sender
         result["to"] = msg["to"]
         return result
+
+    def queue_draft(self, payload: dict, path: Path | None = None) -> dict:
+        """Persist a Resend-shaped draft. Does not send."""
+        msg = normalize(payload)
+        if not msg["to"] or not msg["subject"]:
+            raise OutboxError("to and subject are required")
+        target = path or DRAFTS_PATH
+        target.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "shape": "resend",
+            "queued": True,
+            "sent": False,
+            "from": msg["from"],
+            "to": msg["to"],
+            "subject": msg["subject"],
+        }
+        with target.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record, ensure_ascii=True) + "\n")
+        return record

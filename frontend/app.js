@@ -39,7 +39,9 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({ query, house: house || undefined }),
     });
     const j = await r.json();
-    addBubble("engine", j.answer || j.error || "no answer");
+    const raw = j.answer || j.error || "no answer";
+    const labeled = raw.startsWith("[prediction]") ? raw : `[prediction] ${raw}`;
+    addBubble("engine", labeled);
   } catch (err) {
     addBubble("engine", String(err));
   } finally {
@@ -60,5 +62,17 @@ document.getElementById("facts").addEventListener("click", async () => {
   const lines = (j.facts || []).map((f) => `${f.id}: ${f.title}`).join("\n");
   addBubble("engine", `Playbook index (${j.count})\n${lines}`);
 });
+
+const contractsBtn = document.getElementById("contracts");
+if (contractsBtn) {
+  contractsBtn.addEventListener("click", async () => {
+    const r = await fetch("/contracts");
+    const j = await r.json();
+    const lines = (j.contracts || [])
+      .map((c) => `${c.id}: ${c.product} (${(c.fields || []).length} fields)`)
+      .join("\n");
+    addBubble("engine", `Portable contracts (${j.count})\n${lines}`);
+  });
+}
 
 refreshHealth();
