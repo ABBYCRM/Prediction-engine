@@ -1,0 +1,29 @@
+{
+  "house": "pi",
+  "kind": "keyword",
+  "as_of": "2026-09-25T06:15:00+00:00",
+  "xai_attempted": false,
+  "xai_error": "XAI_API_KEY unset; no api.x.ai call",
+  "note": "Keyword clusters are research hypotheses, not volume or bid facts. Agency CPC tables were seen and discarded.",
+  "mixed_house": false,
+  "items": [
+    {
+      "kind": "prediction",
+      "claim": "Prediction: intent clusters to test for PI search (not bids): car accident lawyer + geo, truck accident lawyer + geo, rideshare accident lawyer + geo, slip and fall lawyer + geo.",
+      "url": null,
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "prediction",
+      "claim": "Prediction: negative-keyword hypotheses for a PI-only account include social security disability, criminal defense, divorce, and workers compensation unless that house is separately authorized.",
+      "url": null,
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "observation",
+      "claim": "Third-party legal-marketing pages discuss Google verification and no-guarantee copy for personal injury ads; those pages are not official policy and were not used as performance facts.",
+      "url": "https://www.oyova.com/blog/google-ads-personal-injury-lawyer-policy/",
+      "as_of": "2026-09-25"
+    }
+  ]
+}

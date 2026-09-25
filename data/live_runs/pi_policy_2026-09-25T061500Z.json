@@ -1,0 +1,41 @@
+{
+  "house": "pi",
+  "kind": "policy",
+  "as_of": "2026-09-25T06:15:00+00:00",
+  "xai_attempted": false,
+  "xai_error": "XAI_API_KEY unset; no api.x.ai call",
+  "note": "Session research via public web pages. Predictions labeled. No CPC/CTR invented.",
+  "mixed_house": false,
+  "items": [
+    {
+      "kind": "fact",
+      "claim": "Google personalized advertising restricts targeting users based on sensitive interest categories and states ads should not target users in ways that exploit personal hardships.",
+      "url": "https://support.google.com/adwordspolicy?p=privpol_p13nad",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "fact",
+      "claim": "Google treats content related to abuse and trauma as a sensitive interest category; advertiser-curated audiences cannot be used when promoting in that category, while some predefined Google audiences may still be used.",
+      "url": "https://support.google.com/adspolicy/answer/16701149",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "fact",
+      "claim": "Meta ads must not assert or imply personal attributes, including disability, physical or mental health including medical conditions, or vulnerable financial status.",
+      "url": "https://transparency.meta.com/policies/ad-standards/objectionable-content/privacy-violations-personal-attributes",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "fact",
+      "claim": "Meta requires US-targeting financial products, housing, or employment ads to self-identify as a Special Ad Category when that framework applies.",
+      "url": "https://transparency.meta.com/policies/ad-standards/unacceptable-content/discriminatory-practices/",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "prediction",
+      "claim": "Prediction: PI search campaigns that stay on keyword and location intent and avoid remarketing lists built from injury-page visitors are less likely to collide with Google sensitive-category audience rules than list-based remarketing.",
+      "url": "https://support.google.com/adspolicy/answer/16701149",
+      "as_of": "2026-09-25"
+    }
+  ]
+}
