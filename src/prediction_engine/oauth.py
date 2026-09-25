@@ -56,3 +56,23 @@ def require_meta_ads() -> TokenBundle:
             "Meta Ads connector refused: missing META_APP_ID / META_APP_SECRET / META_ACCESS_TOKEN"
         )
     return status
+
+
+def google_sheets_status() -> TokenBundle:
+    ads = google_ads_status()
+    sheet_id = bool(os.environ.get("GOOGLE_SHEETS_SPREADSHEET_ID", "").strip())
+    return TokenBundle(
+        provider="google_sheets",
+        present=ads.present and sheet_id,
+        scopes_note="https://www.googleapis.com/auth/spreadsheets",
+    )
+
+
+def require_google_sheets() -> TokenBundle:
+    status = google_sheets_status()
+    if not status.present:
+        raise OAuthError(
+            "Sheets write refused: missing Google OAuth tokens and/or "
+            "GOOGLE_SHEETS_SPREADSHEET_ID"
+        )
+    return status

@@ -7,7 +7,9 @@ from typing import Any, Callable
 from prediction_engine.analog_store import read_hits
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
+from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
+from prediction_engine.sheets import SheetsError, write_row
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
 
@@ -18,6 +20,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "intake.ssdi": {"payload"},
     "engine.predict": {"query", "live_scrape"},
     "analog.log": {"limit"},
+    "sheets.write": {"row"},
 }
 
 
@@ -73,6 +76,16 @@ def _analog_log(args: dict[str, Any]) -> dict[str, Any]:
     return {"count": len(hits), "hits": hits}
 
 
+def _sheets_write(args: dict[str, Any]) -> dict[str, Any]:
+    row = args.get("row") or {}
+    if not isinstance(row, dict):
+        return {"error": "row must be an object"}
+    try:
+        return write_row(row)
+    except (SheetsError, OAuthError) as exc:
+        return {"error": str(exc), "remote": False}
+
+
 HANDLERS: dict[str, ToolFn] = {
     "playbook.list": _playbook_list,
     "playbook.match": _playbook_match,
@@ -80,6 +93,7 @@ HANDLERS: dict[str, ToolFn] = {
     "intake.ssdi": _intake_ssdi,
     "engine.predict": _engine_predict,
     "analog.log": _analog_log,
+    "sheets.write": _sheets_write,
 }
 
 
