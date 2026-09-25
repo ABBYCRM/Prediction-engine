@@ -25,6 +25,7 @@ from prediction_engine.sheets import SheetsError, write_row
 from prediction_engine.publishers import is_allowlisted_publisher_url
 from prediction_engine.research import ResearchError, assert_runs_not_mixed, write_run
 from prediction_engine.scraper import SSRFError, assert_public_http_url, scrape_public
+from prediction_engine.ledger import read_ledger
 from prediction_engine.writeback import WritebackError, validate_row
 
 
@@ -292,3 +293,54 @@ def test_writeback_row_requires_fact_source():
 
 def test_live_runs_on_disk_are_house_isolated():
     assert_runs_not_mixed()
+
+
+def test_predict_rejects_unknown_house():
+    result = PredictionEngine().predict("google ads policy", house="mixed")
+    assert result.used_xai is False
+    assert result.facts == []
+    assert result.note.startswith("house_rejected")
+
+
+def test_predict_accepts_pi_house():
+    result = PredictionEngine().predict("google limited ad serving", house="pi")
+    assert result.house == "pi"
+    assert result.used_xai is False
+    assert result.facts
+
+
+def test_ledger_read_filters_house(tmp_path):
+    dest = tmp_path / "ledger.jsonl"
+    write_row(
+        {
+            "house": "pi",
+            "kind": "prediction",
+            "target": "local_jsonl",
+            "query": "policy",
+            "claim": "Prediction: stay on sourced policy pages.",
+        },
+        path=dest,
+    )
+    write_row(
+        {
+            "house": "ssdi",
+            "kind": "prediction",
+            "target": "local_jsonl",
+            "query": "policy",
+            "claim": "Prediction: cite SSA pages only.",
+        },
+        path=dest,
+    )
+    pi_rows = read_ledger(path=dest, house="pi")
+    assert len(pi_rows) == 1
+    assert pi_rows[0]["house"] == "pi"
+    assert all(row.get("remote") is False for row in pi_rows)
+
+
+def test_mcp_ledger_read_and_extra_keys():
+    assert "ledger.read" in list_tools()
+    out = invoke("ledger.read", {"limit": 5})
+    assert "rows" in out
+    assert out["remote"] is False
+    with pytest.raises(MCPError):
+        invoke("ledger.read", {"limit": 5, "extra": 1})
