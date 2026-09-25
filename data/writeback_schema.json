@@ -1,6 +1,6 @@
 {
   "name": "prediction_engine_writeback",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "as_of": "2026-09-25",
   "description": "Row contract for CRM or Sheets writeback. Facts need url+as_of. Predictions labeled prediction. PI and SSDI never share a row.",
   "targets": ["sheets", "hubspot_readonly_note", "local_jsonl"],

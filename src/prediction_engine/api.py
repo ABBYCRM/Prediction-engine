@@ -13,7 +13,14 @@ from prediction_engine.config import get_settings
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.analog_store import read_hits
 from prediction_engine.mcp import MCPError, invoke, list_tools
+from prediction_engine.oauth import (
+    OAuthError,
+    google_ads_status,
+    google_sheets_status,
+    meta_ads_status,
+)
 from prediction_engine.playbook import list_facts
+from prediction_engine.sheets import SheetsError, write_row
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend"
 ENGINE = PredictionEngine()
@@ -58,6 +65,11 @@ class Handler(BaseHTTPRequestHandler):
                     "playbook_facts": len(facts),
                     "cadence": cadence_status(),
                     "mcp_tools": list_tools(),
+                    "connectors": {
+                        "google_ads": google_ads_status().present,
+                        "google_sheets": google_sheets_status().present,
+                        "meta_ads": meta_ads_status().present,
+                    },
                 },
             )
             return
@@ -112,6 +124,14 @@ class Handler(BaseHTTPRequestHandler):
                     "live_scrape": live,
                 },
             )
+            return
+        if path == "/writeback":
+            try:
+                out = write_row(body if isinstance(body, dict) else {})
+            except (SheetsError, OAuthError) as exc:
+                self._json(400, {"error": str(exc), "remote": False})
+                return
+            self._json(200, out)
             return
         if path == "/mcp":
             try:
