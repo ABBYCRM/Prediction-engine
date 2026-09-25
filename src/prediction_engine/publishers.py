@@ -30,3 +30,13 @@ def is_allowlisted_publisher_url(url: str) -> bool:
         return False
     host = (parsed.hostname or "").lower()
     return host in publisher_hosts()
+
+
+def list_publishers() -> dict:
+    hosts = sorted(publisher_hosts())
+    return {
+        "count": len(hosts),
+        "hosts": hosts,
+        "floor_hosts": sorted(FLOOR_HOSTS),
+        "live_fetch": False,
+    }
