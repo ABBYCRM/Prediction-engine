@@ -8,6 +8,9 @@ from urllib.parse import urlparse
 
 import httpx
 
+from prediction_engine.browser import snapshot_html
+from prediction_engine.publishers import is_allowlisted_publisher_url
+
 BLOCKED_SCHEMES = frozenset({"file", "ftp", "gopher", "data", "javascript"})
 
 
@@ -53,3 +56,12 @@ def fetch_text(url: str, timeout: float = 10.0) -> str:
         resp = client.get(url)
         resp.raise_for_status()
         return resp.text
+
+
+def scrape_public(url: str, timeout: float = 10.0) -> dict:
+    """SSRF first; publisher allowlist second; snapshot text only. No metrics."""
+    assert_public_http_url(url)
+    if not is_allowlisted_publisher_url(url):
+        raise SSRFError(f"publisher not allowlisted: {url}")
+    html = fetch_text(url, timeout=timeout)
+    return {"url": url, "text": snapshot_html(html), "fetched": True}

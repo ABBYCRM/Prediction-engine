@@ -30,6 +30,7 @@ class Settings:
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = ""
+    resend_api_key: str = ""
     host: str = "127.0.0.1"
     port: int = 8080
 
@@ -47,6 +48,7 @@ def get_settings() -> Settings:
         smtp_user=os.environ.get("SMTP_USER", ""),
         smtp_password=os.environ.get("SMTP_PASSWORD", ""),
         smtp_from=os.environ.get("SMTP_FROM", ""),
+        resend_api_key=os.environ.get("RESEND_API_KEY", ""),
         host=os.environ.get("HOST", "127.0.0.1"),
         port=int(os.environ.get("PORT", "8080")),
     )

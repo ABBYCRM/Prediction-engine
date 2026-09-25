@@ -38,6 +38,11 @@ class ResendOutbox:
         msg = normalize(payload)
         if not msg["to"] or not msg["subject"]:
             raise OutboxError("to and subject are required")
+        settings = self.mailer.settings
+        if settings.resend_api_key and not (settings.smtp_host and settings.smtp_from):
+            raise OutboxError(
+                "RESEND_API_KEY does not bypass SMTP_HOST+SMTP_FROM gate"
+            )
         sender = msg["from"] or self.mailer.settings.smtp_from
         try:
             result = self.mailer.send(msg["to"][0], msg["subject"], msg["text"])
