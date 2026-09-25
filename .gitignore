@@ -3,6 +3,7 @@ __pycache__/
 .pytest_cache/
 *.pyc
 .env
+data/analog_hits.jsonl
 *.egg-info/
 dist/
 build/
