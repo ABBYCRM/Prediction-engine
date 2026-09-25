@@ -24,7 +24,7 @@ def _validate_base_url(url: str) -> str:
 class Settings:
     xai_api_key: str = ""
     xai_base_url: str = "https://api.x.ai/v1"
-    xai_model: str = "grok-4"
+    xai_model: str = "grok-4.7"
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_user: str = ""
@@ -42,7 +42,7 @@ def get_settings() -> Settings:
     return Settings(
         xai_api_key=os.environ.get("XAI_API_KEY", ""),
         xai_base_url=os.environ.get("XAI_BASE_URL", "https://api.x.ai/v1"),
-        xai_model=os.environ.get("XAI_MODEL", "grok-4"),
+        xai_model=os.environ.get("XAI_MODEL", "grok-4.7"),
         smtp_host=os.environ.get("SMTP_HOST", ""),
         smtp_port=int(os.environ.get("SMTP_PORT", "587")),
         smtp_user=os.environ.get("SMTP_USER", ""),
