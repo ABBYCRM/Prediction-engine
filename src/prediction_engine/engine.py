@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 
 from prediction_engine.analog import retrieve
 from prediction_engine.analog_store import persist_hits
+from prediction_engine.houses import HouseError, assert_single_house
 from prediction_engine.playbook import list_facts, match_facts
 from prediction_engine.publishers import is_allowlisted_publisher_url
 from prediction_engine.scraper import SSRFError, scrape_public
@@ -22,6 +23,7 @@ class PredictionResult:
     note: str = ""
     analogs: list[dict] = field(default_factory=list)
     scrape: dict | None = None
+    house: str | None = None
 
 
 class PredictionEngine:
@@ -73,8 +75,26 @@ class PredictionEngine:
             return {"url": url, "fetched": True, "host": host, "note": "scrape_ok"}
         return None
 
-    def predict(self, query: str, live_scrape: bool = False) -> PredictionResult:
+    def predict(
+        self,
+        query: str,
+        live_scrape: bool = False,
+        house: str | None = None,
+    ) -> PredictionResult:
         query = (query or "").strip()
+        house_name: str | None = None
+        if house:
+            try:
+                house_name = assert_single_house(house)
+            except HouseError as exc:
+                return PredictionResult(
+                    query=query,
+                    facts=[],
+                    answer="",
+                    used_xai=False,
+                    note=f"house_rejected:{exc}",
+                    house=None,
+                )
         if not query:
             return PredictionResult(
                 query="",
@@ -82,10 +102,11 @@ class PredictionEngine:
                 answer="",
                 used_xai=False,
                 note="query_required",
+                house=house_name,
             )
         facts = match_facts(query) or list_facts()[:3]
         analogs = retrieve(query)
-        persist_hits(query, analogs)
+        persist_hits(query, analogs, house=house_name)
         scrape = self._maybe_scrape(query, facts, live_scrape)
         sourced = "\n".join(
             f"- [{f.get('id')}] {f.get('claim')} (source: {f.get('url')})" for f in facts
@@ -103,6 +124,7 @@ class PredictionEngine:
                 note="XAI_API_KEY unset; returning sourced facts only",
                 analogs=analogs,
                 scrape=scrape,
+                house=house_name,
             )
         messages = [
             {
@@ -125,6 +147,7 @@ class PredictionEngine:
                 note=str(exc),
                 analogs=analogs,
                 scrape=scrape,
+                house=house_name,
             )
         return PredictionResult(
             query=query,
@@ -133,4 +156,5 @@ class PredictionEngine:
             used_xai=True,
             analogs=analogs,
             scrape=scrape,
+            house=house_name,
         )
