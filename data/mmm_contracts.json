@@ -58,6 +58,38 @@
       "fields": ["impressions", "clicks", "cost", "forecast_period", "geo_target_constants", "language_constants"],
       "url": "https://developers.google.com/google-ads/api/docs/keyword-planning/generate-forecast-metrics",
       "as_of": "2026-09-23"
+    },
+    {
+      "id": "gads-conversion-lift-study",
+      "product": "Google Ads Conversion Lift",
+      "title": "Lift study configuration axes",
+      "fields": ["selected_campaigns", "conversion_actions", "study_duration", "holdback_percentage", "metric_focus_conversions_or_value", "start_date", "end_date"],
+      "url": "https://support.google.com/google-ads/answer/12005564",
+      "as_of": "2026-09-25"
+    },
+    {
+      "id": "gads-conversion-lift-report",
+      "product": "Google Ads Conversion Lift",
+      "title": "Lift measurement report field names",
+      "fields": ["conversion_lift_baseline_conversions", "conversion_lift_exposed_conversions", "incremental_conversions", "cost_per_incremental_conversion", "relative_conversion_lift", "incremental_conversion_value", "relative_conversion_value_lift", "conversion_lift_start_date", "conversion_lift_end_date"],
+      "url": "https://developers.google.com/google-ads/api/docs/experiments/reporting",
+      "as_of": "2026-09-23"
+    },
+    {
+      "id": "keen-scenario-planner",
+      "product": "Keen Decision Systems",
+      "title": "Scenario planner parameter names",
+      "fields": ["financial_goal", "maximize_profitability", "revenue_target", "fixed_budget", "channel_constraints", "weekly_forecast", "external_factors", "prior_lift_studies"],
+      "url": "https://keends.com/blog/scenario-based-marketing-planning/",
+      "as_of": "2024-03-19"
+    },
+    {
+      "id": "adobe-mix-factors",
+      "product": "Adobe Mix Modeler",
+      "title": "Factor standard field names",
+      "fields": ["factorName", "factorValue", "factorType"],
+      "url": "https://experienceleague.adobe.com/en/docs/mix-modeler/using/ingest-data/schemas",
+      "as_of": "2026-01-12"
     }
   ]
 }
