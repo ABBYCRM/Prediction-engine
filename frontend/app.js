@@ -32,10 +32,11 @@ form.addEventListener("submit", async (e) => {
   queryEl.value = "";
   statusEl.textContent = "thinking…";
   try {
+    const house = (document.getElementById("house") || {}).value || "";
     const r = await fetch("/predict", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query, house: house || undefined }),
     });
     const j = await r.json();
     addBubble("engine", j.answer || j.error || "no answer");

@@ -10,12 +10,18 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PATH = ROOT / "data" / "analog_hits.jsonl"
 
 
-def persist_hits(query: str, hits: list[dict], path: Path | None = None) -> Path:
+def persist_hits(
+    query: str,
+    hits: list[dict],
+    path: Path | None = None,
+    house: str | None = None,
+) -> Path:
     target = path or DEFAULT_PATH
     target.parent.mkdir(parents=True, exist_ok=True)
     record = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "query": query,
+        "house": house,
         "hits": [
             {
                 "id": item.get("id"),
