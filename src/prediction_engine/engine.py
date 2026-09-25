@@ -22,6 +22,15 @@ class PredictionEngine:
         self.client = client or XAIClient()
 
     def predict(self, query: str) -> PredictionResult:
+        query = (query or "").strip()
+        if not query:
+            return PredictionResult(
+                query="",
+                facts=[],
+                answer="",
+                used_xai=False,
+                note="query_required",
+            )
         facts = match_facts(query) or list_facts()[:3]
         sourced = "\n".join(
             f"- [{f.get('id')}] {f.get('claim')} (source: {f.get('url')})" for f in facts

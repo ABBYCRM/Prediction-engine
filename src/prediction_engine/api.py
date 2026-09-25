@@ -7,9 +7,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
+from prediction_engine import __version__
+from prediction_engine.cadence import cadence_status
 from prediction_engine.config import get_settings
 from prediction_engine.engine import PredictionEngine
-from prediction_engine.mcp import MCPError, invoke
+from prediction_engine.mcp import MCPError, invoke, list_tools
 from prediction_engine.playbook import list_facts
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend"
@@ -42,7 +44,24 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         if path == "/health":
-            self._json(200, {"ok": True, "service": "prediction-engine"})
+            settings = get_settings()
+            facts = list_facts()
+            self._json(
+                200,
+                {
+                    "ok": True,
+                    "service": "prediction-engine",
+                    "version": __version__,
+                    "xai_available": bool(settings.xai_api_key),
+                    "xai_host": "api.x.ai",
+                    "playbook_facts": len(facts),
+                    "cadence": cadence_status(),
+                    "mcp_tools": list_tools(),
+                },
+            )
+            return
+        if path == "/tools":
+            self._json(200, {"tools": list_tools()})
             return
         if path == "/facts":
             facts = list_facts()

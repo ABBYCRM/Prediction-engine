@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
+from prediction_engine.engine import PredictionEngine
 from prediction_engine.playbook import list_facts, match_facts
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
@@ -14,6 +15,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "playbook.match": {"query"},
     "intake.ccfl": {"payload"},
     "intake.ssdi": {"payload"},
+    "engine.predict": {"query"},
 }
 
 
@@ -40,12 +42,31 @@ def _intake_ssdi(args: dict[str, Any]) -> dict[str, Any]:
     return ssdi_intake_ok(payload)
 
 
+def _engine_predict(args: dict[str, Any]) -> dict[str, Any]:
+    query = str(args.get("query") or "").strip()
+    if not query:
+        return {"error": "query_required"}
+    result = PredictionEngine().predict(query)
+    return {
+        "query": result.query,
+        "answer": result.answer,
+        "facts": result.facts,
+        "used_xai": result.used_xai,
+        "note": result.note,
+    }
+
+
 HANDLERS: dict[str, ToolFn] = {
     "playbook.list": _playbook_list,
     "playbook.match": _playbook_match,
     "intake.ccfl": _intake_ccfl,
     "intake.ssdi": _intake_ssdi,
+    "engine.predict": _engine_predict,
 }
+
+
+def list_tools() -> list[str]:
+    return sorted(ALLOWED_TOOLS)
 
 
 class MCPError(ValueError):
