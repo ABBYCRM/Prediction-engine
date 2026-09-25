@@ -9,6 +9,7 @@ from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
+from prediction_engine.ledger import read_ledger
 from prediction_engine.sheets import SheetsError, write_row
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
@@ -18,9 +19,10 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "playbook.match": {"query"},
     "intake.ccfl": {"payload"},
     "intake.ssdi": {"payload"},
-    "engine.predict": {"query", "live_scrape"},
+    "engine.predict": {"query", "live_scrape", "house"},
     "analog.log": {"limit"},
     "sheets.write": {"row"},
+    "ledger.read": {"limit", "house"},
 }
 
 
@@ -52,7 +54,9 @@ def _engine_predict(args: dict[str, Any]) -> dict[str, Any]:
     if not query:
         return {"error": "query_required"}
     live = bool(args.get("live_scrape"))
-    result = PredictionEngine().predict(query, live_scrape=live)
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    result = PredictionEngine().predict(query, live_scrape=live, house=house_s)
     return {
         "query": result.query,
         "answer": result.answer,
@@ -62,6 +66,7 @@ def _engine_predict(args: dict[str, Any]) -> dict[str, Any]:
         "analogs": result.analogs,
         "scrape": result.scrape,
         "live_scrape": live,
+        "house": result.house,
     }
 
 
@@ -74,6 +79,18 @@ def _analog_log(args: dict[str, Any]) -> dict[str, Any]:
     limit = max(1, min(limit, 50))
     hits = read_hits(limit=limit)
     return {"count": len(hits), "hits": hits}
+
+
+def _ledger_read(args: dict[str, Any]) -> dict[str, Any]:
+    raw = args.get("limit", 20)
+    try:
+        limit = int(raw)
+    except (TypeError, ValueError):
+        limit = 20
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    rows = read_ledger(limit=limit, house=house_s)
+    return {"count": len(rows), "rows": rows, "remote": False}
 
 
 def _sheets_write(args: dict[str, Any]) -> dict[str, Any]:
@@ -94,6 +111,7 @@ HANDLERS: dict[str, ToolFn] = {
     "engine.predict": _engine_predict,
     "analog.log": _analog_log,
     "sheets.write": _sheets_write,
+    "ledger.read": _ledger_read,
 }
 
 
