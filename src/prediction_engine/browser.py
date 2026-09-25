@@ -30,6 +30,23 @@ class _TextExtractor(HTMLParser):
         return " ".join(self._chunks)
 
 
+def chrome_available() -> bool:
+    from shutil import which
+
+    return bool(which("google-chrome") or which("chromium") or which("chromium-browser"))
+
+
+def dump_dom(html: str | None = None, limit: int = 4000) -> dict:
+    """Local Chrome path when a binary exists; otherwise snapshot-only."""
+    text = snapshot_html(html or "", limit=limit)
+    return {
+        "chrome": chrome_available(),
+        "fetched": False,
+        "note": "chrome_present" if chrome_available() else "chrome_absent_snapshot_only",
+        "text": text,
+    }
+
+
 def snapshot_html(html: str, limit: int = 4000) -> str:
     parser = _TextExtractor()
     parser.feed(html or "")
