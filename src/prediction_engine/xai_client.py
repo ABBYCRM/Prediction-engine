@@ -20,7 +20,12 @@ class XAIClient:
     def available(self) -> bool:
         return bool(self.settings.xai_api_key)
 
-    def chat(self, messages: list[dict[str, str]], timeout: float = 30.0) -> str:
+    def chat(
+        self,
+        messages: list[dict[str, str]],
+        timeout: float = 30.0,
+        tools: list[dict[str, Any]] | None = None,
+    ) -> str:
         if not self.settings.xai_api_key:
             raise XAIError("XAI_API_KEY is not set; refusing to call any LLM host")
         url = f"{self.settings.xai_base_url}/chat/completions"
@@ -28,6 +33,8 @@ class XAIClient:
             "model": self.settings.xai_model,
             "messages": messages,
         }
+        if tools:
+            payload["tools"] = tools
         headers = {
             "Authorization": f"Bearer {self.settings.xai_api_key}",
             "Content-Type": "application/json",
@@ -40,3 +47,10 @@ class XAIClient:
             return data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise XAIError(f"unexpected xAI payload: {exc}") from exc
+
+    @staticmethod
+    def search_tools() -> list[dict[str, Any]]:
+        return [
+            {"type": "web_search"},
+            {"type": "x_search"},
+        ]
