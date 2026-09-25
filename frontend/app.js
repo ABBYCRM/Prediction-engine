@@ -16,7 +16,8 @@ async function refreshHealth() {
   try {
     const r = await fetch("/health");
     const j = await r.json();
-    healthEl.textContent = j.ok ? "healthy" : "down";
+    const xai = j.xai_available ? "xai-on" : "xai-off";
+    healthEl.textContent = j.ok ? `healthy · ${xai}` : "down";
     healthEl.classList.toggle("ok", !!j.ok);
   } catch {
     healthEl.textContent = "unreachable";

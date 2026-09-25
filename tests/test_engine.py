@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import pytest
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+from prediction_engine.cadence import ALLOWED_HOURS, on_cadence
 from prediction_engine.config import Settings, SettingsError
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.mailer import Mailer, MailerError
-from prediction_engine.mcp import MCPError, invoke
+from prediction_engine.mcp import MCPError, invoke, list_tools
 from prediction_engine.playbook import list_facts
 from prediction_engine.scraper import SSRFError, assert_public_http_url
 
@@ -67,3 +71,28 @@ def test_xai_base_url_must_be_api_x_ai():
         Settings(xai_base_url="https://api.openai.com/v1")
     ok = Settings(xai_base_url="https://api.x.ai/v1")
     assert ok.xai_base_url.endswith("/v1")
+
+
+def test_cadence_hours_are_fixed():
+    ny = ZoneInfo("America/New_York")
+    on = datetime(2026, 9, 24, 20, 0, tzinfo=ny)
+    off = datetime(2026, 9, 24, 21, 0, tzinfo=ny)
+    assert on_cadence(on) is True
+    assert on_cadence(off) is False
+    assert ALLOWED_HOURS == frozenset({0, 4, 8, 12, 16, 20})
+
+
+def test_engine_empty_query_does_not_invent():
+    result = PredictionEngine().predict("   ")
+    assert result.used_xai is False
+    assert result.facts == []
+    assert result.note == "query_required"
+
+
+def test_mcp_engine_predict_and_tool_list():
+    assert "engine.predict" in list_tools()
+    out = invoke("engine.predict", {"query": "meta ad standards"})
+    assert out["used_xai"] is False
+    assert out["facts"]
+    with pytest.raises(MCPError):
+        invoke("engine.predict", {"query": "x", "extra": 1})

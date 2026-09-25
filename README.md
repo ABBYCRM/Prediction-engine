@@ -2,14 +2,16 @@
 
 Local prediction service. The only external inference API is **xAI**. No DigitalOcean deploy in this session (pending Luis approval).
 
-## Status — 2026-09-24 16:20 EDT
+## Status — 2026-09-24 20:00 EDT
 
 - GitHub connector authenticated as `ABBYCRM`. Only this repo was touched. No DigitalOcean deploy (pending Luis approval).
 - Missing engine/API/playbook/tests/frontend assets from earlier cadence were written and pushed.
-- pytest: 9 passed (`PYTHONPATH=src python3 -m pytest`).
+- pytest: 12 passed (`PYTHONPATH=src python3 -m pytest`).
 - Ads playbook: 11 sourced facts (Google Ads Policy Help; Meta Transparency Center community + ad standards). No invented metrics.
 - Hardening: scraper SSRF, mailer refuses send without SMTP_HOST/SMTP_FROM, MCP rejects unknown tools and extra keys, XAI_BASE_URL locked to api.x.ai.
 - Frontend chat: transcript, health pill, Enter-to-send, playbook index.
+- Cadence helper (`America/New_York` hours {0,4,8,12,16,20}) exposed on `/health`.
+- MCP `engine.predict` + `/tools` listing. Health reports xAI key presence without calling xAI.
 
 ## Run
 
