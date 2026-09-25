@@ -9,6 +9,7 @@ from prediction_engine.analog import retrieve
 from prediction_engine.analog_store import persist_hits
 from prediction_engine.playbook import list_facts, match_facts
 from prediction_engine.publishers import is_allowlisted_publisher_url
+from prediction_engine.scraper import SSRFError, scrape_public
 from prediction_engine.xai_client import XAIClient, XAIError
 
 
@@ -28,7 +29,7 @@ class PredictionEngine:
         self.client = client or XAIClient()
         self.scrape_fn = scrape_fn
 
-    def _maybe_scrape(self, query: str, facts: list[dict]) -> dict | None:
+    def _maybe_scrape(self, query: str, facts: list[dict], live_scrape: bool) -> dict | None:
         candidates: list[str] = []
         for token in query.split():
             if token.startswith("http://") or token.startswith("https://"):
@@ -40,17 +41,39 @@ class PredictionEngine:
         for url in candidates:
             if not is_allowlisted_publisher_url(url):
                 continue
-            if self.scrape_fn is None:
+            host = urlparse(url).hostname or ""
+            if not live_scrape:
                 return {
                     "url": url,
                     "fetched": False,
                     "note": "scrape_skipped_default_predict",
-                    "host": (urlparse(url).hostname or ""),
+                    "host": host,
                 }
-            return self.scrape_fn(url)
+            fn = self.scrape_fn or scrape_public
+            try:
+                out = fn(url)
+            except SSRFError as exc:
+                return {
+                    "url": url,
+                    "fetched": False,
+                    "note": f"scrape_blocked:{exc}",
+                    "host": host,
+                }
+            except Exception as exc:  # network only; never invent metrics
+                return {
+                    "url": url,
+                    "fetched": False,
+                    "note": f"scrape_failed:{type(exc).__name__}",
+                    "host": host,
+                }
+            if isinstance(out, dict):
+                out.setdefault("url", url)
+                out.setdefault("host", host)
+                return out
+            return {"url": url, "fetched": True, "host": host, "note": "scrape_ok"}
         return None
 
-    def predict(self, query: str) -> PredictionResult:
+    def predict(self, query: str, live_scrape: bool = False) -> PredictionResult:
         query = (query or "").strip()
         if not query:
             return PredictionResult(
@@ -63,7 +86,7 @@ class PredictionEngine:
         facts = match_facts(query) or list_facts()[:3]
         analogs = retrieve(query)
         persist_hits(query, analogs)
-        scrape = self._maybe_scrape(query, facts)
+        scrape = self._maybe_scrape(query, facts, live_scrape)
         sourced = "\n".join(
             f"- [{f.get('id')}] {f.get('claim')} (source: {f.get('url')})" for f in facts
         )
