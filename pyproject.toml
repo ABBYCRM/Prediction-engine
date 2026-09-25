@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prediction-engine"
-version = "0.3.0"
+version = "0.4.0"
 description = "Local prediction engine: xAI-only LLM, sourced ads playbook, hardened browser/scraper/mailer/MCP."
 requires-python = ">=3.11"
 dependencies = [
