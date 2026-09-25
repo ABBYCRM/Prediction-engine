@@ -48,3 +48,15 @@
 - Version 0.5.0. pytest: 17 passed (`PYTHONPATH=src python3 -m pytest`).
 - No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset).
 - Next slice: optional live scrape behind explicit flag; expose analog log on GET; keep SMTP dual-gate.
+
+## 2026-09-25 02:15–02:45 EDT — continue e2e (this session)
+
+- Local tree `/home/workdir/Prediction-engine` was empty at start; cloned `ABBYCRM/Prediction-engine` (repo exists, push permission true).
+- pytest before change: 17 passed. After change: 22 passed (`PYTHONPATH=src python3 -m pytest tests/`).
+- Default xAI model is `grok-4.7` on `https://api.x.ai`. `XAI_API_KEY` unset; no live inference. Client now accepts optional `web_search` / `x_search` tool payload when a key exists.
+- Live cited research written under `data/live_runs/` as four house-isolated JSON files (pi policy, pi keyword, ssdi policy, ssdi keyword). Official Google/Meta/SSA URLs used as facts with `as_of`. Agency CPC/volume tables discarded. Predictions labeled `prediction`.
+- Added `research.py` writer (rejects %, CPC, CTR, CPL, ROAS in claims), `writeback.py` + `data/writeback_schema.json`, `oauth.py` Google Ads / Meta gates that raise unless real env tokens exist. No OAuth tokens present; connectors not called.
+- Version 0.6.0.
+- Next still: live scrape flag; Sheets write only after Google OAuth; no DigitalOcean.
+- Blockers: XAI_API_KEY unset; Google/Meta OAuth unset; no DO deploy.
+- Push: native `github___push_files` 403 again; Cursor user-Github bridge commits `9284f86`, `27f03e0`, `597c0c0`, `be74010`, `5efd622`, `783129c` plus this commit.

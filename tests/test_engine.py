@@ -15,8 +15,11 @@ from prediction_engine.mailer import Mailer, MailerError
 from prediction_engine.mcp import MCPError, invoke, list_tools
 from prediction_engine.outbox import OutboxError, ResendOutbox
 from prediction_engine.playbook import list_facts
+from prediction_engine.oauth import OAuthError, require_google_ads, require_meta_ads
 from prediction_engine.publishers import is_allowlisted_publisher_url
+from prediction_engine.research import ResearchError, assert_runs_not_mixed, write_run
 from prediction_engine.scraper import SSRFError, assert_public_http_url, scrape_public
+from prediction_engine.writeback import WritebackError, validate_row
 
 
 def test_ccfl_rejects_already_represented():
@@ -148,3 +151,78 @@ def test_predict_records_allowlisted_scrape_without_fetch():
     assert result.scrape is not None
     assert result.scrape["fetched"] is False
     assert "support.google.com" in result.scrape.get("host", "")
+
+
+def test_research_write_run_rejects_metrics(tmp_path):
+    with pytest.raises(ResearchError):
+        write_run(
+            "pi",
+            "keyword",
+            [{"kind": "prediction", "claim": "CPC is 12%"}],
+            path=tmp_path / "bad.json",
+        )
+
+
+def test_research_write_run_persists(tmp_path):
+    path = write_run(
+        "ssdi",
+        "policy",
+        [
+            {
+                "kind": "fact",
+                "claim": "SSA publishes an official disability overview.",
+                "url": "https://www.ssa.gov/disability",
+                "as_of": "2026-09-25",
+            }
+        ],
+        note="unit",
+        path=tmp_path / "ssdi_policy_unit.json",
+    )
+    assert path.is_file()
+    body = json.loads(path.read_text())
+    assert body["house"] == "ssdi"
+    assert body["mixed_house"] is False
+
+
+def test_oauth_connectors_refuse_without_tokens(monkeypatch):
+    for key in (
+        "GOOGLE_ADS_DEVELOPER_TOKEN",
+        "GOOGLE_ADS_OAUTH_REFRESH_TOKEN",
+        "GOOGLE_ADS_CLIENT_ID",
+        "GOOGLE_ADS_CLIENT_SECRET",
+        "META_APP_ID",
+        "META_APP_SECRET",
+        "META_ACCESS_TOKEN",
+    ):
+        monkeypatch.delenv(key, raising=False)
+    with pytest.raises(OAuthError):
+        require_google_ads()
+    with pytest.raises(OAuthError):
+        require_meta_ads()
+
+
+def test_writeback_row_requires_fact_source():
+    with pytest.raises(WritebackError):
+        validate_row(
+            {
+                "house": "pi",
+                "kind": "fact",
+                "target": "local_jsonl",
+                "query": "policy",
+                "claim": "unsourced",
+            }
+        )
+    row = validate_row(
+        {
+            "house": "pi",
+            "kind": "prediction",
+            "target": "local_jsonl",
+            "query": "policy",
+            "claim": "Prediction: test geo modifiers first.",
+        }
+    )
+    assert row["house"] == "pi"
+
+
+def test_live_runs_on_disk_are_house_isolated():
+    assert_runs_not_mixed()
