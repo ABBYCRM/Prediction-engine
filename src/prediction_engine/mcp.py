@@ -10,6 +10,7 @@ from prediction_engine.engine import PredictionEngine
 from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
 from prediction_engine.ledger import read_ledger
+from prediction_engine.publishers import list_publishers
 from prediction_engine.sheets import SheetsError, write_row
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
@@ -20,9 +21,10 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "intake.ccfl": {"payload"},
     "intake.ssdi": {"payload"},
     "engine.predict": {"query", "live_scrape", "house"},
-    "analog.log": {"limit"},
+    "analog.log": {"limit", "house"},
     "sheets.write": {"row"},
     "ledger.read": {"limit", "house"},
+    "publishers.list": set(),
 }
 
 
@@ -77,8 +79,14 @@ def _analog_log(args: dict[str, Any]) -> dict[str, Any]:
     except (TypeError, ValueError):
         limit = 20
     limit = max(1, min(limit, 50))
-    hits = read_hits(limit=limit)
-    return {"count": len(hits), "hits": hits}
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    hits = read_hits(limit=limit, house=house_s)
+    return {"count": len(hits), "hits": hits, "house": house_s}
+
+
+def _publishers_list(_args: dict[str, Any]) -> dict[str, Any]:
+    return list_publishers()
 
 
 def _ledger_read(args: dict[str, Any]) -> dict[str, Any]:
@@ -112,6 +120,7 @@ HANDLERS: dict[str, ToolFn] = {
     "analog.log": _analog_log,
     "sheets.write": _sheets_write,
     "ledger.read": _ledger_read,
+    "publishers.list": _publishers_list,
 }
 
 
