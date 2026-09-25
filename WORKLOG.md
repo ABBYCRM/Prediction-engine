@@ -60,3 +60,15 @@
 - Next still: live scrape flag; Sheets write only after Google OAuth; no DigitalOcean.
 - Blockers: XAI_API_KEY unset; Google/Meta OAuth unset; no DO deploy.
 - Push: native `github___push_files` 403 again; Cursor user-Github bridge commits `9284f86`, `27f03e0`, `597c0c0`, `be74010`, `5efd622`, `783129c` plus this commit.
+
+## 2026-09-25 04:04–04:34 EDT — cadence hour 4
+
+- Gate: America/New_York hour 4 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean.
+- `predict(..., live_scrape=False)` remains default. `live_scrape=True` uses injected scrape_fn or `scrape_public` (SSRF + publisher allowlist). Fetch failures recorded as notes; no invented metrics.
+- GET `/analogs` + MCP `analog.log` expose persisted analog ids/scores only.
+- POST `/predict` and MCP `engine.predict` now return analogs/scrape and accept `live_scrape`.
+- Version 0.7.0. pytest: 25 passed (`PYTHONPATH=src python3 -m pytest tests/`).
+- No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset).
+- Native `github___push_files` 403; Cursor bridge commits `880d85c`, `9eb9d99`, `1150347`, `b7121dd`, `706f05b` plus this commit.
+- Next slice: Sheets write only after Google OAuth tokens exist; keep SMTP dual-gate; no DO.
