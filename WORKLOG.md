@@ -96,3 +96,14 @@
 - No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset). No OAuth tokens present.
 - Cursor bridge commits `cc6ca7a`, `95f240f`, `403e677`, `937c69d`, `2c9940a`, `f4708b9`, `f8b0b87` plus this commit.
 - Next slice: live Sheets client only after Luis provides tokens; keep SMTP dual-gate; no DO.
+
+## 2026-09-25 16:01–16:31 EDT — cadence hour 16
+
+- Gate: America/New_York hour 16 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean.
+- `publishers.list` + GET `/publishers` return floor + playbook hosts. `live_fetch` stays false.
+- Analog hit reader and MCP `analog.log` accept optional `house`. GET `/analogs?house=` and GET `/ledger?house=` parse query string.
+- Version 0.10.0. pytest: 35 passed (`PYTHONPATH=src python3 -m pytest tests/`).
+- No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset). No OAuth tokens present.
+- Cursor bridge commits `f55dfa0`, `5a00e4e`, `239cf35`, `216e1b8` plus this commit.
+- Next slice: live Sheets client only after Luis provides tokens; keep SMTP dual-gate; no DO.
