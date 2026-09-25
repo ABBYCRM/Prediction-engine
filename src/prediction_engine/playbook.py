@@ -20,7 +20,7 @@ def list_facts() -> list[dict]:
 
 
 def match_facts(query: str, limit: int = 5) -> list[dict]:
-    tokens = {t.lower() for t in query.split() if len(t) > 2}
+    tokens = {t.lower() for t in query.replace("/", " ").replace("-", " ").split() if len(t) > 2}
     scored: list[tuple[int, dict]] = []
     for fact in list_facts():
         blob = " ".join(
@@ -31,7 +31,12 @@ def match_facts(query: str, limit: int = 5) -> list[dict]:
                 str(fact.get("claim") or ""),
             ]
         ).lower()
-        score = sum(1 for t in tokens if t in blob)
+        score = 0
+        for t in tokens:
+            if t in blob:
+                score += 3 if t in str(fact.get("id") or "").lower() else 1
+                if t in str(fact.get("publisher") or "").lower():
+                    score += 1
         if score:
             scored.append((score, fact))
     scored.sort(key=lambda pair: pair[0], reverse=True)

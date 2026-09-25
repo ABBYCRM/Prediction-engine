@@ -7,25 +7,32 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <header>
-    <div>
+  <div class="shell">
+    <aside>
+      <p class="kicker">21st-shaped console</p>
       <h1>Prediction Engine</h1>
-      <p class="sub">xAI-only inference · sourced ads playbook · no invented metrics</p>
-    </div>
-    <div id="health" class="pill">checking…</div>
-  </header>
-  <main>
-    <section id="transcript" aria-live="polite"></section>
-    <form id="composer">
-      <label class="sr" for="query">Message</label>
-      <textarea id="query" rows="3" maxlength="4000" placeholder="Ask about sourced Google/Meta ads policy facts…"></textarea>
-      <div class="row">
-        <button type="submit" id="send">Send</button>
-        <button type="button" id="facts">List playbook facts</button>
-        <span id="status"></span>
-      </div>
-    </form>
-  </main>
+      <p class="sub">xAI-only inference · sourced contracts · no invented metrics</p>
+      <div id="health" class="pill">checking…</div>
+      <button type="button" id="facts">Playbook</button>
+      <button type="button" id="contracts" class="ghost">Contracts</button>
+    </aside>
+    <main>
+      <section id="transcript" aria-live="polite"></section>
+      <form id="composer">
+        <label class="sr" for="query">Message</label>
+        <textarea id="query" rows="3" maxlength="4000" placeholder="Ask a sourced policy or MMM-contract question…"></textarea>
+        <div class="row">
+          <select id="house" aria-label="House">
+            <option value="">house unset</option>
+            <option value="pi">PI house</option>
+            <option value="ssdi">SSDI house</option>
+          </select>
+          <button type="submit" id="send">Send</button>
+          <span id="status"></span>
+        </div>
+      </form>
+    </main>
+  </div>
   <script src="/app.js"></script>
 </body>
 </html>
