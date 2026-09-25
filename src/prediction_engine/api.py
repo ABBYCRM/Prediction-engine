@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from prediction_engine import __version__
 from prediction_engine.cadence import cadence_status
@@ -21,6 +21,7 @@ from prediction_engine.oauth import (
 )
 from prediction_engine.playbook import list_facts
 from prediction_engine.ledger import ledger_summary, read_ledger
+from prediction_engine.publishers import list_publishers
 from prediction_engine.sheets import SheetsError, write_row
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend"
@@ -51,7 +52,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(raw)
 
     def do_GET(self) -> None:
-        path = urlparse(self.path).path
+        parsed = urlparse(self.path)
+        path = parsed.path
+        qs = parse_qs(parsed.query or "")
         if path == "/health":
             settings = get_settings()
             facts = list_facts()
@@ -82,13 +85,20 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, {"count": len(facts), "facts": facts})
             return
         if path == "/analogs":
-            hits = read_hits(limit=50)
-            self._json(200, {"count": len(hits), "hits": hits})
+            house = (qs.get("house") or [None])[0]
+            house_s = str(house).strip() if house else None
+            hits = read_hits(limit=50, house=house_s)
+            self._json(200, {"count": len(hits), "hits": hits, "house": house_s})
+            return
+        if path == "/publishers":
+            self._json(200, list_publishers())
             return
         if path == "/ledger":
             summary = ledger_summary()
-            rows = read_ledger(limit=50)
-            self._json(200, {**summary, "rows": rows, "remote": False})
+            house = (qs.get("house") or [None])[0]
+            house_s = str(house).strip() if house else None
+            rows = read_ledger(limit=50, house=house_s)
+            self._json(200, {**summary, "rows": rows, "remote": False, "house": house_s})
             return
         if path in {"/", "/index.html"}:
             self._static(FRONTEND / "index.html", "text/html; charset=utf-8")
