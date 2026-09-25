@@ -1,0 +1,35 @@
+{
+  "house": "ssdi",
+  "kind": "policy",
+  "as_of": "2026-09-25T06:15:00+00:00",
+  "xai_attempted": false,
+  "xai_error": "XAI_API_KEY unset; no api.x.ai call",
+  "note": "SSDI house only. Official SSA pages. No PI analog set.",
+  "mixed_house": false,
+  "items": [
+    {
+      "kind": "fact",
+      "claim": "SSA states Social Security Disability Insurance provides monthly payments to people who have a disability that stops or limits their ability to work, and eligibility requires a disability or blindness and enough work history.",
+      "url": "https://www.ssa.gov/disability",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "fact",
+      "claim": "SSA states applicants can apply for disability benefits online, and the online path is described for adults 18 or older who are unable to work because of a medical condition expected to last at least 12 months or result in death.",
+      "url": "https://www.ssa.gov/applyfordisability/index.htm",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "fact",
+      "claim": "SSA states SSDI benefits have a five-month waiting period, so payments will not begin before the sixth full month of disability, with a published ALS exception on or after July 23, 2020.",
+      "url": "https://www.ssa.gov/disability/disability.html",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "fact",
+      "claim": "SSA FAQ states people may apply online or call 1-800-772-1213 (TTY 1-800-325-0778) Monday through Friday 8:00 a.m. to 7:00 p.m.",
+      "url": "https://www.ssa.gov/faqs/en/questions/KA-01795.html",
+      "as_of": "2026-09-25"
+    }
+  ]
+}

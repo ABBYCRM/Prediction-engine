@@ -1,0 +1,23 @@
+{
+  "house": "ssdi",
+  "kind": "keyword",
+  "as_of": "2026-09-25T06:15:00+00:00",
+  "xai_attempted": false,
+  "xai_error": "XAI_API_KEY unset; no api.x.ai call",
+  "note": "Keyword clusters are predictions. No PI terms. No invented volumes.",
+  "mixed_house": false,
+  "items": [
+    {
+      "kind": "prediction",
+      "claim": "Prediction: informational SSDI query clusters to test separately from PI: apply for social security disability, SSDI application online, SSDI waiting period, my Social Security disability application status.",
+      "url": "https://www.ssa.gov/applyfordisability/index.htm",
+      "as_of": "2026-09-25"
+    },
+    {
+      "kind": "prediction",
+      "claim": "Prediction: educational landing pages that point applicants to ssa.gov apply flows rather than promising approval are the safer analog than outcome-guarantee copy.",
+      "url": "https://www.ssa.gov/disability",
+      "as_of": "2026-09-25"
+    }
+  ]
+}
