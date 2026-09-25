@@ -21,4 +21,4 @@
 - Frontend health pill shows xai-on/off.
 - Version 0.3.0. pytest: 12 passed (`PYTHONPATH=src python3 -m pytest`).
 - No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset).
-- Push: native GitHub `push_files` 403; used Cursor user-Github bridge.
+- Push: native GitHub `push_files` 403; Cursor user-Github bridge commits `4c1681d`, `0c4fb6b`, `59cafee`.
