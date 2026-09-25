@@ -15,7 +15,13 @@ from prediction_engine.mailer import Mailer, MailerError
 from prediction_engine.mcp import MCPError, invoke, list_tools
 from prediction_engine.outbox import OutboxError, ResendOutbox
 from prediction_engine.playbook import list_facts
-from prediction_engine.oauth import OAuthError, require_google_ads, require_meta_ads
+from prediction_engine.oauth import (
+    OAuthError,
+    require_google_ads,
+    require_google_sheets,
+    require_meta_ads,
+)
+from prediction_engine.sheets import SheetsError, write_row
 from prediction_engine.publishers import is_allowlisted_publisher_url
 from prediction_engine.research import ResearchError, assert_runs_not_mixed, write_run
 from prediction_engine.scraper import SSRFError, assert_public_http_url, scrape_public
@@ -199,6 +205,66 @@ def test_oauth_connectors_refuse_without_tokens(monkeypatch):
         require_google_ads()
     with pytest.raises(OAuthError):
         require_meta_ads()
+    with pytest.raises(OAuthError):
+        require_google_sheets()
+
+
+def test_sheets_target_refuses_without_oauth(tmp_path, monkeypatch):
+    monkeypatch.delenv("GOOGLE_SHEETS_SPREADSHEET_ID", raising=False)
+    for key in (
+        "GOOGLE_ADS_DEVELOPER_TOKEN",
+        "GOOGLE_ADS_OAUTH_REFRESH_TOKEN",
+        "GOOGLE_ADS_CLIENT_ID",
+        "GOOGLE_ADS_CLIENT_SECRET",
+    ):
+        monkeypatch.delenv(key, raising=False)
+    with pytest.raises((SheetsError, OAuthError)):
+        write_row(
+            {
+                "house": "pi",
+                "kind": "prediction",
+                "target": "sheets",
+                "query": "policy",
+                "claim": "Prediction: test geo modifiers first.",
+            },
+            path=tmp_path / "ledger.jsonl",
+        )
+
+
+def test_local_jsonl_writeback(tmp_path):
+    dest = tmp_path / "ledger.jsonl"
+    out = write_row(
+        {
+            "house": "ssdi",
+            "kind": "prediction",
+            "target": "local_jsonl",
+            "query": "policy",
+            "claim": "Prediction: cite SSA pages only.",
+        },
+        path=dest,
+    )
+    assert out["ok"] is True
+    assert out["remote"] is False
+    assert dest.is_file()
+
+
+def test_mcp_sheets_write_and_extra_keys():
+    assert "sheets.write" in list_tools()
+    out = invoke(
+        "sheets.write",
+        {
+            "row": {
+                "house": "pi",
+                "kind": "prediction",
+                "target": "sheets",
+                "query": "policy",
+                "claim": "Prediction: stay on sourced policy pages.",
+            }
+        },
+    )
+    assert "error" in out
+    with pytest.raises(MCPError):
+        invoke("sheets.write", {"row": {}, "extra": 1})
 
 
 def test_writeback_row_requires_fact_source():
