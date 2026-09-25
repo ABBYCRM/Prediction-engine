@@ -72,3 +72,15 @@
 - No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset).
 - Native `github___push_files` 403; Cursor bridge commits `880d85c`, `9eb9d99`, `1150347`, `b7121dd`, `706f05b` plus this commit.
 - Next slice: Sheets write only after Google OAuth tokens exist; keep SMTP dual-gate; no DO.
+
+## 2026-09-25 08:02–08:32 EDT — cadence hour 8
+
+- Gate: America/New_York hour 8 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean.
+- Sheets write path (`sheets.py`): `target=sheets` raises unless Google Ads OAuth quartet + `GOOGLE_SHEETS_SPREADSHEET_ID` are set. Even with tokens present, live Google client is not wired this slice (no remote write). `target=local_jsonl` appends `data/writeback_ledger.jsonl` (gitignored). HubSpot target stays read-only.
+- MCP `sheets.write` and POST `/writeback`. Health payload adds connector presence flags (boolean only).
+- SMTP dual-gate unchanged (`RESEND_API_KEY` cannot send without SMTP_HOST+SMTP_FROM).
+- Version 0.8.0. pytest: 28 passed (`PYTHONPATH=src python3 -m pytest tests/`).
+- No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset). No OAuth tokens present.
+- Cursor bridge commits `8ced94b`, `8259a14`, `afdc14e` plus this commit.
+- Next slice: live Sheets client only after Luis provides tokens; still no DO.
