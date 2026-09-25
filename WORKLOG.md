@@ -37,3 +37,14 @@
 - No live xAI call (`XAI_API_KEY` unset).
 - Next slice: wire scrape into predict only for allowlisted publisher URLs; persist analog hits; optional Resend API key still must not bypass SMTP gate unless Luis sets both.
 - Blockers: native GitHub write may 403 (use Cursor bridge); Chrome binary may be absent in sandbox; no DO deploy.
+
+## 2026-09-25 00:08–00:30 EDT — cadence hour 0 (continue)
+
+- Gate still hour 0 America/New_York. Touched only ABBYCRM/Prediction-engine. No DigitalOcean.
+- Implemented next-slice items: publisher allowlist (`publishers.py`) from playbook hosts + floor `support.google.com` / `transparency.meta.com`.
+- `scraper.scrape_public` now SSRF then allowlist then snapshot. Default `predict` records allowlisted URL/host without live fetch (`fetched: false`).
+- Analog hits persist to `data/analog_hits.jsonl` (gitignored); ids/scores only.
+- `RESEND_API_KEY` cannot bypass SMTP_HOST+SMTP_FROM.
+- Version 0.5.0. pytest: 17 passed (`PYTHONPATH=src python3 -m pytest`).
+- No invented CTR/CPC/%. No live xAI call (`XAI_API_KEY` unset).
+- Next slice: optional live scrape behind explicit flag; expose analog log on GET; keep SMTP dual-gate.

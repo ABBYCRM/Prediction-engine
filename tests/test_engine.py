@@ -1,17 +1,22 @@
 from __future__ import annotations
 
-import pytest
+import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+import pytest
+
+from prediction_engine.analog_store import persist_hits, read_hits
 from prediction_engine.cadence import ALLOWED_HOURS, on_cadence
 from prediction_engine.config import Settings, SettingsError
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.mailer import Mailer, MailerError
 from prediction_engine.mcp import MCPError, invoke, list_tools
+from prediction_engine.outbox import OutboxError, ResendOutbox
 from prediction_engine.playbook import list_facts
-from prediction_engine.scraper import SSRFError, assert_public_http_url
+from prediction_engine.publishers import is_allowlisted_publisher_url
+from prediction_engine.scraper import SSRFError, assert_public_http_url, scrape_public
 
 
 def test_ccfl_rejects_already_represented():
@@ -96,3 +101,50 @@ def test_mcp_engine_predict_and_tool_list():
     assert out["facts"]
     with pytest.raises(MCPError):
         invoke("engine.predict", {"query": "x", "extra": 1})
+
+
+def test_publisher_allowlist_rejects_offlist():
+    assert is_allowlisted_publisher_url(
+        "https://support.google.com/adspolicy/answer/6008942"
+    )
+    assert is_allowlisted_publisher_url(
+        "https://transparency.meta.com/policies/ad-standards/"
+    )
+    assert not is_allowlisted_publisher_url("https://example.com/ads")
+
+
+def test_scrape_public_rejects_offlist_after_ssrf():
+    with pytest.raises(SSRFError):
+        scrape_public("https://example.com/not-a-publisher")
+
+
+def test_resend_key_does_not_bypass_smtp():
+    settings = Settings(
+        smtp_host="",
+        smtp_from="",
+        resend_api_key="re_test_not_a_real_key",
+    )
+    box = ResendOutbox(Mailer(settings))
+    with pytest.raises(OutboxError):
+        box.send({"to": "a@b.c", "subject": "x", "text": "y"})
+
+
+def test_analog_hits_persist(tmp_path):
+    path = tmp_path / "hits.jsonl"
+    persist_hits(
+        "google ads policy",
+        [{"id": "gads-areas", "kind": "playbook_fact", "analog_score": 2}],
+        path=path,
+    )
+    rows = read_hits(path)
+    assert len(rows) == 1
+    assert rows[0]["hits"][0]["id"] == "gads-areas"
+    assert "%" not in json.dumps(rows[0])
+
+
+def test_predict_records_allowlisted_scrape_without_fetch():
+    result = PredictionEngine().predict("google limited ad serving")
+    assert result.analogs
+    assert result.scrape is not None
+    assert result.scrape["fetched"] is False
+    assert "support.google.com" in result.scrape.get("host", "")
