@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from prediction_engine.analog_store import read_hits
+from prediction_engine.contracts import list_contracts
+from prediction_engine.houses import HouseError, bridge_0_to_1, bridge_10_to_0
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.oauth import OAuthError
@@ -25,6 +27,8 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "sheets.write": {"row"},
     "ledger.read": {"limit", "house"},
     "publishers.list": set(),
+    "contracts.list": set(),
+    "house.bridge": {"house", "mode"},
 }
 
 
@@ -89,6 +93,22 @@ def _publishers_list(_args: dict[str, Any]) -> dict[str, Any]:
     return list_publishers()
 
 
+def _contracts_list(_args: dict[str, Any]) -> dict[str, Any]:
+    rows = list_contracts()
+    return {"count": len(rows), "contracts": rows}
+
+
+def _house_bridge(args: dict[str, Any]) -> dict[str, Any]:
+    house = str(args.get("house") or "")
+    mode = str(args.get("mode") or "10_to_0")
+    try:
+        if mode == "0_to_1":
+            return bridge_0_to_1(house)
+        return bridge_10_to_0(house)
+    except HouseError as exc:
+        return {"error": str(exc), "mixed": True}
+
+
 def _ledger_read(args: dict[str, Any]) -> dict[str, Any]:
     raw = args.get("limit", 20)
     try:
@@ -121,6 +141,8 @@ HANDLERS: dict[str, ToolFn] = {
     "sheets.write": _sheets_write,
     "ledger.read": _ledger_read,
     "publishers.list": _publishers_list,
+    "contracts.list": _contracts_list,
+    "house.bridge": _house_bridge,
 }
 
 
