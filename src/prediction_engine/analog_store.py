@@ -37,15 +37,25 @@ def persist_hits(
     return target
 
 
-def read_hits(path: Path | None = None, limit: int = 50) -> list[dict]:
+def read_hits(
+    path: Path | None = None,
+    limit: int = 50,
+    house: str | None = None,
+) -> list[dict]:
     target = path or DEFAULT_PATH
     if not target.is_file():
         return []
     lines = target.read_text(encoding="utf-8").splitlines()
     out: list[dict] = []
-    for line in lines[-limit:]:
+    wanted = (house or "").strip() or None
+    for line in lines:
         line = line.strip()
         if not line:
             continue
-        out.append(json.loads(line))
-    return out
+        row = json.loads(line)
+        if wanted and row.get("house") != wanted:
+            continue
+        out.append(row)
+    if limit < 1:
+        limit = 1
+    return out[-limit:]
