@@ -11,6 +11,7 @@ from prediction_engine import __version__
 from prediction_engine.cadence import cadence_status
 from prediction_engine.config import get_settings
 from prediction_engine.engine import PredictionEngine
+from prediction_engine.analog_store import read_hits
 from prediction_engine.mcp import MCPError, invoke, list_tools
 from prediction_engine.playbook import list_facts
 
@@ -67,6 +68,10 @@ class Handler(BaseHTTPRequestHandler):
             facts = list_facts()
             self._json(200, {"count": len(facts), "facts": facts})
             return
+        if path == "/analogs":
+            hits = read_hits(limit=50)
+            self._json(200, {"count": len(hits), "hits": hits})
+            return
         if path in {"/", "/index.html"}:
             self._static(FRONTEND / "index.html", "text/html; charset=utf-8")
             return
@@ -92,7 +97,8 @@ class Handler(BaseHTTPRequestHandler):
             if not query:
                 self._json(400, {"error": "query_required"})
                 return
-            result = ENGINE.predict(query)
+            live = bool(body.get("live_scrape"))
+            result = ENGINE.predict(query, live_scrape=live)
             self._json(
                 200,
                 {
@@ -101,6 +107,9 @@ class Handler(BaseHTTPRequestHandler):
                     "facts": result.facts,
                     "used_xai": result.used_xai,
                     "note": result.note,
+                    "analogs": result.analogs,
+                    "scrape": result.scrape,
+                    "live_scrape": live,
                 },
             )
             return
