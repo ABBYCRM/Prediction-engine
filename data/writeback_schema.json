@@ -1,0 +1,25 @@
+{
+  "name": "prediction_engine_writeback",
+  "version": "0.6.0",
+  "as_of": "2026-09-25",
+  "description": "Row contract for CRM or Sheets writeback. Facts need url+as_of. Predictions labeled prediction. PI and SSDI never share a row.",
+  "targets": ["sheets", "hubspot_readonly_note", "local_jsonl"],
+  "required": ["house", "kind", "target", "query", "claim"],
+  "fields": {
+    "house": {"enum": ["pi", "ssdi"], "note": "single house only"},
+    "kind": {"enum": ["fact", "prediction", "observation"]},
+    "target": {"enum": ["sheets", "hubspot_readonly_note", "local_jsonl"]},
+    "query": {"type": "string"},
+    "claim": {"type": "string", "forbid": ["invented CPC", "invented CTR", "invented %"]},
+    "url": {"type": "string", "required_if_kind": "fact"},
+    "as_of": {"type": "string", "required_if_kind": "fact"},
+    "used_xai": {"type": "boolean"},
+    "xai_model": {"type": "string", "allowed_when_used_xai": ["grok-4.7"]},
+    "note": {"type": "string"}
+  },
+  "oauth": {
+    "sheets": "requires Google OAuth; connector refuses without tokens",
+    "google_ads": "GOOGLE_ADS_DEVELOPER_TOKEN + OAuth refresh + client id/secret",
+    "meta_ads": "META_APP_ID + META_APP_SECRET + META_ACCESS_TOKEN"
+  }
+}
