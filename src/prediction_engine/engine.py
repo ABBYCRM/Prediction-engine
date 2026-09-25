@@ -61,7 +61,7 @@ class PredictionEngine:
                     "note": f"scrape_blocked:{exc}",
                     "host": host,
                 }
-            except Exception as exc:  # network only; never invent metrics
+            except Exception as exc:
                 return {
                     "url": url,
                     "fetched": False,
@@ -105,7 +105,7 @@ class PredictionEngine:
                 house=house_name,
             )
         facts = match_facts(query) or list_facts()[:3]
-        analogs = retrieve(query)
+        analogs = retrieve(query, house=house_name)
         persist_hits(query, analogs, house=house_name)
         scrape = self._maybe_scrape(query, facts, live_scrape)
         sourced = "\n".join(
