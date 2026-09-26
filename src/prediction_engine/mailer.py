@@ -59,3 +59,21 @@ class Mailer:
             "host": self.settings.smtp_host,
             "gates": {"a": True, "b": True},
         }
+
+    def preview_envelope(self, to: str, subject: str, body: str) -> dict:
+        """Build headers only. Never opens a socket. Never returns secrets."""
+        return {
+            "ok": True,
+            "live_smtp": False,
+            "sent": False,
+            "to": to,
+            "from": self.settings.smtp_from or None,
+            "subject": subject,
+            "body_chars": len(body or ""),
+            "host_set": bool(self.settings.smtp_host),
+            "gates": {
+                "a": self.gate_a_config(),
+                "b": self.gate_b_enabled(),
+            },
+            "can_send": self.can_send(),
+        }

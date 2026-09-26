@@ -6,7 +6,9 @@ from typing import Any
 
 import httpx
 
-from prediction_engine.config import Settings, get_settings
+from urllib.parse import urlparse
+
+from prediction_engine.config import ALLOWED_XAI_HOSTS, Settings, get_settings
 
 
 class XAIError(RuntimeError):
@@ -19,6 +21,16 @@ class XAIClient:
 
     def available(self) -> bool:
         return bool(self.settings.xai_api_key)
+
+    def host_guard(self) -> dict[str, Any]:
+        host = (urlparse(self.settings.xai_base_url).hostname or "").lower()
+        return {
+            "ok": host in ALLOWED_XAI_HOSTS,
+            "host": host,
+            "allowed_hosts": sorted(ALLOWED_XAI_HOSTS),
+            "key_set": bool(self.settings.xai_api_key),
+            "will_call": bool(self.settings.xai_api_key) and host in ALLOWED_XAI_HOSTS,
+        }
 
     def chat(
         self,
