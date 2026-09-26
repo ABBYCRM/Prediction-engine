@@ -48,7 +48,13 @@ def retrieve(query: str, limit: int = 5, house: str | None = None) -> list[dict]
             extra += 3
         if any(tok in claim.lower() for tok in tokens if " " in tok):
             extra += 2
-        score = _score(tokens, blob, extra_weight=extra)
+        fact_id = str(fact.get("id") or "").lower()
+        if fact_id and fact_id in {t.lower() for t in tokens}:
+            extra += 4
+        url = str(fact.get("url") or "").lower()
+        if url and any(tok in url for tok in tokens if len(tok) > 4):
+            extra += 1
+        score = _score(tokens, blob + " " + url, extra_weight=extra)
         if score:
             item = dict(fact)
             item["kind"] = "playbook_fact"
@@ -74,7 +80,13 @@ def retrieve(query: str, limit: int = 5, house: str | None = None) -> list[dict]
             extra += 2
         if _tokens(title) & tokens:
             extra += 2
-        score = _score(tokens, blob, extra_weight=extra)
+        cid = str(contract.get("id") or "").lower()
+        if cid and any(tok.replace(" ", "-") in cid for tok in tokens):
+            extra += 3
+        url = str(contract.get("url") or "").lower()
+        if url and any(tok in url for tok in tokens if len(tok) > 4):
+            extra += 1
+        score = _score(tokens, blob + " " + url, extra_weight=extra)
         if score:
             item = dict(contract)
             item["kind"] = "portable_contract"
