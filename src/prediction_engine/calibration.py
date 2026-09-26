@@ -97,6 +97,7 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
             "mean_brier": None,
             "house": house,
             "invented_market": False,
+            "buckets": reliability_buckets([]),
         }
     mean = sum(float(r["brier"]) for r in rows) / len(rows)
     return {
@@ -104,4 +105,35 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
         "mean_brier": mean,
         "house": house,
         "invented_market": False,
+        "buckets": reliability_buckets(rows),
     }
+
+
+def reliability_buckets(rows: list[dict], n_bins: int = 5) -> list[dict]:
+    """Equal-width [0,1] bins. Counts only; no market numbers."""
+    bins = max(2, min(int(n_bins), 10))
+    width = 1.0 / bins
+    out = []
+    for i in range(bins):
+        lo = i * width
+        hi = 1.0 if i == bins - 1 else (i + 1) * width
+        group = []
+        for r in rows:
+            p = float(r["p"])
+            if (p >= lo and p < hi) or (i == bins - 1 and p == 1.0):
+                group.append(r)
+        if not group:
+            out.append({"lo": lo, "hi": hi, "count": 0, "mean_p": None, "mean_y": None, "mean_brier": None})
+            continue
+        mean_p = sum(float(r["p"]) for r in group) / len(group)
+        mean_y = sum(int(r["y"]) for r in group) / len(group)
+        mean_b = sum(float(r["brier"]) for r in group) / len(group)
+        out.append({
+            "lo": lo,
+            "hi": hi,
+            "count": len(group),
+            "mean_p": mean_p,
+            "mean_y": mean_y,
+            "mean_brier": mean_b,
+        })
+    return out
