@@ -11,7 +11,9 @@ from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
 from prediction_engine.engine import PredictionEngine
 from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
-from prediction_engine.ledger import read_ledger
+from prediction_engine.calibration import CalibrationError, record as cal_record, summary as cal_summary
+from prediction_engine.ledger import append_local, read_ledger
+from prediction_engine.writeback import WritebackError
 from prediction_engine.publishers import list_publishers
 from prediction_engine.cadence import cadence_status
 from prediction_engine.mailer import Mailer
@@ -37,6 +39,9 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "sheets.preview": {"row"},
     "cadence.status": set(),
     "xai.guard": set(),
+    "calibration.record": {"p", "y", "house", "query"},
+    "calibration.summary": {"house"},
+    "ledger.append": {"row"},
 }
 
 
@@ -152,6 +157,34 @@ def _xai_guard(_args: dict[str, Any]) -> dict[str, Any]:
     return XAIClient().host_guard()
 
 
+def _calibration_record(args: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return cal_record(
+            args.get("p"),
+            args.get("y"),
+            house=str(args.get("house") or ""),
+            query=str(args.get("query") or ""),
+        )
+    except (CalibrationError, HouseError) as exc:
+        return {"error": str(exc), "invented_market": False}
+
+
+def _calibration_summary(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    return cal_summary(house=house_s)
+
+
+def _ledger_append(args: dict[str, Any]) -> dict[str, Any]:
+    row = args.get("row") or {}
+    if not isinstance(row, dict):
+        return {"error": "row must be an object", "remote": False}
+    try:
+        return append_local(row)
+    except (WritebackError, HouseError) as exc:
+        return {"error": str(exc), "remote": False}
+
+
 def _sheets_preview(args: dict[str, Any]) -> dict[str, Any]:
     row = args.get("row")
     if row is not None and not isinstance(row, dict):
@@ -189,6 +222,9 @@ HANDLERS: dict[str, ToolFn] = {
     "sheets.preview": _sheets_preview,
     "cadence.status": _cadence_status,
     "xai.guard": _xai_guard,
+    "calibration.record": _calibration_record,
+    "calibration.summary": _calibration_summary,
+    "ledger.append": _ledger_append,
 }
 
 
