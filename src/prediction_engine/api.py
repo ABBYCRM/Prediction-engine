@@ -21,7 +21,10 @@ from prediction_engine.oauth import (
 )
 from prediction_engine.contracts import list_contracts
 from prediction_engine.playbook import list_facts
-from prediction_engine.ledger import ledger_summary, read_ledger
+from prediction_engine.calibration import CalibrationError, record as cal_record, summary as cal_summary
+from prediction_engine.houses import HouseError
+from prediction_engine.ledger import append_local, ledger_summary, read_ledger
+from prediction_engine.writeback import WritebackError
 from prediction_engine.publishers import list_publishers
 from prediction_engine.mailer import Mailer
 from prediction_engine.sheets import SheetsError, preview_values_append, write_row
@@ -120,6 +123,11 @@ class Handler(BaseHTTPRequestHandler):
             rows = read_ledger(limit=50, house=house_s)
             self._json(200, {**summary, "rows": rows, "remote": False, "house": house_s})
             return
+        if path == "/calibration":
+            house = (qs.get("house") or [None])[0]
+            house_s = str(house).strip() if house else None
+            self._json(200, cal_summary(house=house_s))
+            return
         if path in {"/", "/index.html"}:
             self._static(FRONTEND / "index.html", "text/html; charset=utf-8")
             return
@@ -169,6 +177,27 @@ class Handler(BaseHTTPRequestHandler):
                 out = write_row(body if isinstance(body, dict) else {})
             except (SheetsError, OAuthError) as exc:
                 self._json(400, {"error": str(exc), "remote": False})
+                return
+            self._json(200, out)
+            return
+        if path == "/ledger/append":
+            try:
+                out = append_local(body if isinstance(body, dict) else {})
+            except (WritebackError, HouseError) as exc:
+                self._json(400, {"error": str(exc), "remote": False})
+                return
+            self._json(200, out)
+            return
+        if path == "/calibration":
+            try:
+                out = cal_record(
+                    body.get("p"),
+                    body.get("y"),
+                    house=str(body.get("house") or ""),
+                    query=str(body.get("query") or ""),
+                )
+            except (CalibrationError, HouseError) as exc:
+                self._json(400, {"error": str(exc), "invented_market": False})
                 return
             self._json(200, out)
             return
