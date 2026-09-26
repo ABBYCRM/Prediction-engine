@@ -53,6 +53,8 @@ def normalize(payload: dict) -> dict:
         "html": html,
         "text": str(text),
         "tags": tags,
+        "scheduled_at": payload.get("scheduled_at"),
+        "headers": payload.get("headers") if isinstance(payload.get("headers"), dict) else {},
     }
 
 
@@ -102,6 +104,8 @@ class ResendOutbox:
             "reply_to": msg["reply_to"],
             "subject": msg["subject"],
             "tags": msg["tags"],
+            "scheduled_at": msg.get("scheduled_at"),
+            "headers": msg.get("headers") or {},
         }
         with target.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(record, ensure_ascii=True) + "\n")
