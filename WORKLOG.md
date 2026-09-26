@@ -2,6 +2,16 @@
 
 See git history for slices through 2026-09-25 16:31 EDT.
 
+## 2026-09-26 04:03–04:33 EDT — cadence hour 4
+
+- Gate: last slice ended 2026-09-26 00:35 EDT; now 04:03 EDT (≥3.5h). Hour 4 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean. No invented CPL/ROAS.
+- SMTP dual-gate: HOST+FROM is gate A; SMTP_SEND_ENABLED is gate B. Resend key still cannot bypass either gate. Mailer.send still does not open a live SMTP socket (`live_smtp: false`).
+- Sheets live client remains unwired. Added public values.append field-name contract + preview route/MCP tool. Tokens still required before any future remote write.
+- Version 0.14.0. pytest: 50 passed.
+- Next slice: live Sheets client only after tokens + Luis sign-off; live SMTP socket only after dual-gate and explicit send test; no DO.
+- Blockers: native GitHub write 403 (Cursor bridge used); XAI_API_KEY unset; Google OAuth / spreadsheet id unset.
+
 ## 2026-09-26 00:05–00:35 EDT — cadence hour 0
 
 - Gate: last slice ended 2026-09-25 20:35 EDT; now 00:05 EDT (≥3.5h). Hour 0 ∈ {0,4,8,12,16,20}. Worked.
