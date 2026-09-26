@@ -7,7 +7,11 @@ from prediction_engine.playbook import list_facts
 
 
 def _tokens(text: str) -> set[str]:
-    return {t.lower() for t in text.replace("/", " ").replace("-", " ").split() if len(t) > 2}
+    parts = [t.lower() for t in text.replace("/", " ").replace("-", " ").replace("_", " ").split() if len(t) > 2]
+    grams = set(parts)
+    for i in range(len(parts) - 1):
+        grams.add(f"{parts[i]} {parts[i + 1]}")
+    return grams
 
 
 def _score(query_tokens: set[str], blob: str, extra_weight: int = 0) -> int:
@@ -46,6 +50,9 @@ def retrieve(query: str, limit: int = 5, house: str | None = None) -> list[dict]
             ]
         )
         extra = 2 if any(tok in field_blob.lower() for tok in tokens) else 0
+        product = str(contract.get("product") or "").lower()
+        if any(tok in product for tok in tokens if " " not in tok):
+            extra += 1
         score = _score(tokens, blob, extra_weight=extra)
         if score:
             item = dict(contract)
