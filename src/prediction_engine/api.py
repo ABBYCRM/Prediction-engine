@@ -19,6 +19,7 @@ from prediction_engine.oauth import (
     google_sheets_status,
     meta_ads_status,
 )
+from prediction_engine.contracts import list_contracts
 from prediction_engine.playbook import list_facts
 from prediction_engine.ledger import ledger_summary, read_ledger
 from prediction_engine.publishers import list_publishers
@@ -92,6 +93,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/publishers":
             self._json(200, list_publishers())
+            return
+        if path == "/contracts":
+            rows = list_contracts()
+            self._json(200, {"count": len(rows), "contracts": rows, "live_numbers": False})
             return
         if path == "/ledger":
             summary = ledger_summary()
