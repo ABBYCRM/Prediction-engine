@@ -3,93 +3,23 @@
   "disclaimer": "Field names and planning parameters copied from public product docs. No performance numbers.",
   "as_of": "2026-09-25",
   "contracts": [
-    {
-      "id": "meridian-input-axes",
-      "product": "Google Meridian",
-      "title": "MMM input axes",
-      "fields": ["time", "geo", "kpi", "revenue_per_kpi", "population", "controls", "media_impressions", "media_spend", "organic_media", "non_media_treatments", "reach", "frequency"],
-      "url": "https://developers.google.com/meridian/docs/basics/meridian-introduction",
-      "as_of": "2026-07-09"
-    },
-    {
-      "id": "meridian-unified-schema",
-      "product": "Google Meridian",
-      "title": "Unified Schema marketing data point",
-      "fields": ["geo_info", "date_interval", "kpi", "control_variables", "media_variables", "non_media_variables", "reach_frequency_variables", "media_spend"],
-      "url": "https://developers.google.com/meridian/docs/user-guide/mmm-unified-schema",
-      "as_of": "2026-05-15"
-    },
-    {
-      "id": "robyn-inputs",
-      "product": "Meta Robyn",
-      "title": "robyn_inputs variable classes",
-      "fields": ["date_var", "dep_var", "dep_var_type", "prophet_vars", "context_vars", "paid_media_spends", "paid_media_vars", "organic_vars", "factor_vars", "adstock"],
-      "url": "https://facebookexperimental.github.io/Robyn/docs/features/",
-      "as_of": "2024-12-20"
-    },
-    {
-      "id": "robyn-transforms",
-      "product": "Meta Robyn",
-      "title": "Required media transforms (names only)",
-      "fields": ["adstock_geometric", "adstock_weibull_cdf", "adstock_weibull_pdf", "saturation_hill"],
-      "url": "https://facebookexperimental.github.io/Robyn/docs/features/",
-      "as_of": "2024-12-20"
-    },
-    {
-      "id": "adobe-mix-plan",
-      "product": "Adobe Mix Modeler",
-      "title": "Scenario plan parameters",
-      "fields": ["flight_dates", "total_budget", "channel_budget_constraints", "model_id", "predicted_outcomes"],
-      "url": "https://business.adobe.com/products/mix-modeler/marketing-scenario-planning.html",
-      "as_of": "2026-05-18"
-    },
-    {
-      "id": "gads-performance-planner",
-      "product": "Google Ads Performance Planner",
-      "title": "Planner forecast contract",
-      "fields": ["campaign_selection", "conversion_goal", "forecast_period", "auction_sim_lookback_7_to_10_days", "refresh_about_24h"],
-      "url": "https://support.google.com/google-ads/answer/9230124",
-      "as_of": "2026-09-25"
-    },
-    {
-      "id": "gads-keyword-forecast",
-      "product": "Google Ads API Keyword Forecast",
-      "title": "GenerateKeywordForecastMetrics fields",
-      "fields": ["impressions", "clicks", "cost", "forecast_period", "geo_target_constants", "language_constants"],
-      "url": "https://developers.google.com/google-ads/api/docs/keyword-planning/generate-forecast-metrics",
-      "as_of": "2026-09-23"
-    },
-    {
-      "id": "gads-conversion-lift-study",
-      "product": "Google Ads Conversion Lift",
-      "title": "Lift study configuration axes",
-      "fields": ["selected_campaigns", "conversion_actions", "study_duration", "holdback_percentage", "metric_focus_conversions_or_value", "start_date", "end_date"],
-      "url": "https://support.google.com/google-ads/answer/12005564",
-      "as_of": "2026-09-25"
-    },
-    {
-      "id": "gads-conversion-lift-report",
-      "product": "Google Ads Conversion Lift",
-      "title": "Lift measurement report field names",
-      "fields": ["conversion_lift_baseline_conversions", "conversion_lift_exposed_conversions", "incremental_conversions", "cost_per_incremental_conversion", "relative_conversion_lift", "incremental_conversion_value", "relative_conversion_value_lift", "conversion_lift_start_date", "conversion_lift_end_date"],
-      "url": "https://developers.google.com/google-ads/api/docs/experiments/reporting",
-      "as_of": "2026-09-23"
-    },
-    {
-      "id": "keen-scenario-planner",
-      "product": "Keen Decision Systems",
-      "title": "Scenario planner parameter names",
-      "fields": ["financial_goal", "maximize_profitability", "revenue_target", "fixed_budget", "channel_constraints", "weekly_forecast", "external_factors", "prior_lift_studies"],
-      "url": "https://keends.com/blog/scenario-based-marketing-planning/",
-      "as_of": "2024-03-19"
-    },
-    {
-      "id": "adobe-mix-factors",
-      "product": "Adobe Mix Modeler",
-      "title": "Factor standard field names",
-      "fields": ["factorName", "factorValue", "factorType"],
-      "url": "https://experienceleague.adobe.com/en/docs/mix-modeler/using/ingest-data/schemas",
-      "as_of": "2026-01-12"
-    }
+    {"id": "meridian-input-axes", "product": "Google Meridian", "title": "MMM input axes", "fields": ["time", "geo", "kpi", "revenue_per_kpi", "population", "controls", "media_impressions", "media_spend", "organic_media", "non_media_treatments", "reach", "frequency"], "url": "https://developers.google.com/meridian/docs/basics/meridian-introduction", "as_of": "2026-07-09"},
+    {"id": "meridian-unified-schema", "product": "Google Meridian", "title": "Unified Schema marketing data point", "fields": ["geo_info", "date_interval", "kpi", "control_variables", "media_variables", "non_media_variables", "reach_frequency_variables", "media_spend"], "url": "https://developers.google.com/meridian/docs/user-guide/mmm-unified-schema", "as_of": "2026-05-15"},
+    {"id": "robyn-inputs", "product": "Meta Robyn", "title": "robyn_inputs variable classes", "fields": ["date_var", "dep_var", "dep_var_type", "prophet_vars", "context_vars", "paid_media_spends", "paid_media_vars", "organic_vars", "factor_vars", "adstock"], "url": "https://facebookexperimental.github.io/Robyn/docs/features/", "as_of": "2024-12-20"},
+    {"id": "robyn-transforms", "product": "Meta Robyn", "title": "Required media transforms (names only)", "fields": ["adstock_geometric", "adstock_weibull_cdf", "adstock_weibull_pdf", "saturation_hill"], "url": "https://facebookexperimental.github.io/Robyn/docs/features/", "as_of": "2024-12-20"},
+    {"id": "adobe-mix-plan", "product": "Adobe Mix Modeler", "title": "Scenario plan parameters", "fields": ["flight_dates", "total_budget", "channel_budget_constraints", "model_id", "predicted_outcomes"], "url": "https://business.adobe.com/products/mix-modeler/marketing-scenario-planning.html", "as_of": "2026-05-18"},
+    {"id": "gads-performance-planner", "product": "Google Ads Performance Planner", "title": "Planner forecast contract", "fields": ["campaign_selection", "conversion_goal", "forecast_period", "auction_sim_lookback_7_to_10_days", "refresh_about_24h"], "url": "https://support.google.com/google-ads/answer/9230124", "as_of": "2026-09-25"},
+    {"id": "gads-keyword-forecast", "product": "Google Ads API Keyword Forecast", "title": "GenerateKeywordForecastMetrics fields", "fields": ["impressions", "clicks", "cost", "forecast_period", "geo_target_constants", "language_constants"], "url": "https://developers.google.com/google-ads/api/docs/keyword-planning/generate-forecast-metrics", "as_of": "2026-09-23"},
+    {"id": "gads-conversion-lift-study", "product": "Google Ads Conversion Lift", "title": "Lift study configuration axes", "fields": ["selected_campaigns", "conversion_actions", "study_duration", "holdback_percentage", "metric_focus_conversions_or_value", "start_date", "end_date"], "url": "https://support.google.com/google-ads/answer/12005564", "as_of": "2026-09-25"},
+    {"id": "gads-conversion-lift-report", "product": "Google Ads Conversion Lift", "title": "Lift measurement report field names", "fields": ["conversion_lift_baseline_conversions", "conversion_lift_exposed_conversions", "incremental_conversions", "cost_per_incremental_conversion", "relative_conversion_lift", "incremental_conversion_value", "relative_conversion_value_lift", "conversion_lift_start_date", "conversion_lift_end_date"], "url": "https://developers.google.com/google-ads/api/docs/experiments/reporting", "as_of": "2026-09-23"},
+    {"id": "keen-scenario-planner", "product": "Keen Decision Systems", "title": "Scenario planner parameter names", "fields": ["financial_goal", "maximize_profitability", "revenue_target", "fixed_budget", "channel_constraints", "weekly_forecast", "external_factors", "prior_lift_studies"], "url": "https://keends.com/blog/scenario-based-marketing-planning/", "as_of": "2024-03-19"},
+    {"id": "adobe-mix-factors", "product": "Adobe Mix Modeler", "title": "Factor standard field names", "fields": ["factorName", "factorValue", "factorType"], "url": "https://experienceleague.adobe.com/en/docs/mix-modeler/using/ingest-data/schemas", "as_of": "2026-01-12"},
+    {"id": "meridian-geox-design", "product": "Google Meridian GeoX", "title": "Geo incrementality DesignConfig axes", "fields": ["experiment_duration", "experiment_types", "methodology", "min_r2", "budget_pct", "cost_per_incremental_conversion"], "url": "https://developers.google.com/meridian/geox/faqs", "as_of": "2026-09-01"},
+    {"id": "meridian-geox-interventions", "product": "Google Meridian GeoX", "title": "Named geo experiment intervention types", "fields": ["holdback", "go-dark", "heavy-up", "single-cell", "multi-cell", "treatment_geos", "control_geos", "cool-down"], "url": "https://developers.google.com/meridian/geox/types-of-experiments", "as_of": "2026-08-31"},
+    {"id": "meridian-geox-pretest", "product": "Google Meridian GeoX", "title": "Pretest geo time-series columns", "fields": ["date", "location", "conversions", "spend_cell_1", "spend_cell_2"], "url": "https://developers.google.com/meridian/geox/prepare-your-pretest-data", "as_of": "2026-09-02"},
+    {"id": "meridian-modelspec-axes", "product": "Google Meridian", "title": "ModelSpec argument names", "fields": ["media_effects_dist", "hill_before_adstock", "max_lag", "unique_sigma_for_each_geo", "media_prior_type", "holdout_id", "adstock_decay_spec", "enable_aks", "knots", "baseline_geo"], "url": "https://developers.google.com/meridian/docs/advanced-modeling/intro", "as_of": "2026-09-05"},
+    {"id": "meridian-unified-opt", "product": "Google Meridian", "title": "Unified Schema optimization message names", "fields": ["BudgetOptimization", "IncrementalOutcomeGrid", "channel_result", "budget_constraints"], "url": "https://developers.google.com/meridian/docs/user-guide/mmm-unified-schema", "as_of": "2026-05-15"},
+    {"id": "robyn-window-refresh", "product": "Meta Robyn", "title": "Model window and refresh argument names", "fields": ["window_start", "window_end", "robyn_refresh", "NRMSE", "DECOMP.RSSD", "prophet_country"], "url": "https://facebookexperimental.github.io/Robyn/docs/features/", "as_of": "2024-12-20"},
+    {"id": "robyn-calibration-point", "product": "Meta Robyn", "title": "Calibration study point-estimate inputs", "fields": ["starting_date", "end_date", "incremental_response"], "url": "https://facebookexperimental.github.io/Robyn/docs/analysts-guide-to-MMM/", "as_of": "2024-12-20"}
   ]
 }
