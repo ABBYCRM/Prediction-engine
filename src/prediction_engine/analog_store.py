@@ -59,3 +59,27 @@ def read_hits(
     if limit < 1:
         limit = 1
     return out[-limit:]
+
+
+def hit_summary(path: Path | None = None, house: str | None = None) -> dict:
+    """Count analog retrievals only. No CPL/ROAS."""
+    rows = read_hits(path=path, limit=200, house=house)
+    n_hits = 0
+    by_kind: dict[str, int] = {}
+    for row in rows:
+        hits = row.get("hits") or []
+        if not isinstance(hits, list):
+            continue
+        n_hits += len(hits)
+        for item in hits:
+            if not isinstance(item, dict):
+                continue
+            kind = str(item.get("kind") or "unknown")
+            by_kind[kind] = by_kind.get(kind, 0) + 1
+    return {
+        "queries": len(rows),
+        "hits": n_hits,
+        "by_kind": by_kind,
+        "house": house,
+        "invented_market": False,
+    }

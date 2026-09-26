@@ -1,5 +1,15 @@
 # WORKLOG
 
+
+## 2026-09-26 16:05–16:35 EDT — cadence hour 16
+
+- Gate: America/New_York hour 16 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean. No invented CPL/ROAS or other market numbers.
+- v0.17.0: calibration `summary` now returns equal-width reliability `buckets` (mean_p / mean_y / mean_brier from caller-supplied p,y only). `analog_store.hit_summary` counts retrieval queries/hits/by_kind. MCP `analog.summary`. Sheets still unwired. SMTP still dual-gated and not live.
+- xAI only at api.x.ai when XAI_API_KEY is set (unset this slice; no live LLM call).
+- Next slice: live Sheets only after tokens + Luis sign-off; live SMTP only after dual-gate + explicit send test; no DO.
+
+
 See git history for slices through 2026-09-25 16:31 EDT.
 
 ## 2026-09-26 12:02–12:32 EDT — cadence hour 12
