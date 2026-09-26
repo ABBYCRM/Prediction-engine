@@ -2,6 +2,17 @@
 
 See git history for slices through 2026-09-25 16:31 EDT.
 
+## 2026-09-26 08:06–08:36 EDT — cadence hour 8
+
+- Gate: last slice ended 2026-09-26 04:33 EDT; now 08:06 EDT (≥3.5h). Hour 8 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean. No invented CPL/ROAS.
+- Cadence: `next_window` reports next allowed ET hour and hours_until. Exposed on GET `/cadence` and MCP `cadence.status`.
+- Mailer: `preview_envelope` builds header/length metadata only. Dual-gate send path still does not open a live SMTP socket.
+- xAI: `XAIClient.host_guard` reports host pin (`api.x.ai`) and whether a call would be attempted. GET `/xai` + MCP `xai.guard`. No call when key unset.
+- Version 0.15.0. pytest: 55 passed.
+- Next slice: live Sheets client only after tokens + Luis sign-off; live SMTP socket only after dual-gate and explicit send test; no DO.
+- Blockers: XAI_API_KEY unset; Google OAuth / spreadsheet id unset.
+
 ## 2026-09-26 04:03–04:33 EDT — cadence hour 4
 
 - Gate: last slice ended 2026-09-26 00:35 EDT; now 04:03 EDT (≥3.5h). Hour 4 ∈ {0,4,8,12,16,20}. Worked.
