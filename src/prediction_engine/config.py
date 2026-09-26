@@ -9,6 +9,10 @@ from urllib.parse import urlparse
 ALLOWED_XAI_HOSTS = frozenset({"api.x.ai"})
 
 
+def _truthy(value: str) -> bool:
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 class SettingsError(ValueError):
     pass
 
@@ -30,6 +34,7 @@ class Settings:
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = ""
+    smtp_send_enabled: bool = False
     resend_api_key: str = ""
     host: str = "127.0.0.1"
     port: int = 8080
@@ -48,6 +53,7 @@ def get_settings() -> Settings:
         smtp_user=os.environ.get("SMTP_USER", ""),
         smtp_password=os.environ.get("SMTP_PASSWORD", ""),
         smtp_from=os.environ.get("SMTP_FROM", ""),
+        smtp_send_enabled=_truthy(os.environ.get("SMTP_SEND_ENABLED", "")),
         resend_api_key=os.environ.get("RESEND_API_KEY", ""),
         host=os.environ.get("HOST", "127.0.0.1"),
         port=int(os.environ.get("PORT", "8080")),
