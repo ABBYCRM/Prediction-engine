@@ -49,6 +49,22 @@ def read_ledger(
     return rows[-max(1, min(limit, 200)) :]
 
 
+def append_local(row: dict, path: Path | None = None) -> dict:
+    """Append a public-key row to the local JSONL ledger. Never remote."""
+    from datetime import datetime, timezone
+
+    from prediction_engine.writeback import validate_row
+
+    cleaned = validate_row(row)
+    cleaned["written_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    cleaned["remote"] = False
+    target = path or DEFAULT_PATH
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(cleaned) + "\n")
+    return cleaned
+
+
 def ledger_summary(path: Path | None = None) -> dict:
     rows = read_ledger(path=path, limit=200)
     counts = {name: 0 for name in sorted(HOUSES)}

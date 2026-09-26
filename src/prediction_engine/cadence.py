@@ -46,6 +46,18 @@ def next_window(now: datetime | None = None) -> dict:
     }
 
 
+def minutes_into_hour(now: datetime | None = None) -> int:
+    stamp = now.astimezone(TZ) if now is not None else datetime.now(TZ)
+    return stamp.minute
+
+
+def window_remaining_minutes(now: datetime | None = None) -> int:
+    """Minutes left in the current allowed hour; 0 when off cadence."""
+    if not on_cadence(now):
+        return 0
+    return max(0, 60 - minutes_into_hour(now))
+
+
 def cadence_status(now: datetime | None = None) -> dict:
     hour = current_hour(now)
     nxt = next_window(now)
@@ -56,4 +68,7 @@ def cadence_status(now: datetime | None = None) -> dict:
         "on_cadence": hour in ALLOWED_HOURS,
         "next_hour": nxt["next_hour"],
         "hours_until": nxt["hours_until"],
+        "minutes_into_hour": minutes_into_hour(now),
+        "window_remaining_minutes": window_remaining_minutes(now),
+        "slice_budget_minutes": 30,
     }
