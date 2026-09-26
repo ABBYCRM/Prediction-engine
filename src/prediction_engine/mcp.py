@@ -28,7 +28,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "ledger.read": {"limit", "house"},
     "publishers.list": set(),
     "contracts.list": set(),
-    "house.bridge": {"house", "mode"},
+    "house.bridge": {"house", "mode", "payload"},
 }
 
 
@@ -101,10 +101,13 @@ def _contracts_list(_args: dict[str, Any]) -> dict[str, Any]:
 def _house_bridge(args: dict[str, Any]) -> dict[str, Any]:
     house = str(args.get("house") or "")
     mode = str(args.get("mode") or "10_to_0")
+    payload = args.get("payload")
+    if payload is not None and not isinstance(payload, dict):
+        return {"error": "payload must be an object", "mixed": True}
     try:
         if mode == "0_to_1":
             return bridge_0_to_1(house)
-        return bridge_10_to_0(house)
+        return bridge_10_to_0(house, payload if isinstance(payload, dict) else None)
     except HouseError as exc:
         return {"error": str(exc), "mixed": True}
 
