@@ -75,4 +75,27 @@ if (contractsBtn) {
   });
 }
 
+const analogsBtn = document.getElementById("analogs");
+if (analogsBtn) {
+  analogsBtn.addEventListener("click", async () => {
+    const house = (document.getElementById("house") || {}).value || "";
+    const qs = house ? `?house=${encodeURIComponent(house)}` : "";
+    const r = await fetch(`/analogs${qs}`);
+    const j = await r.json();
+    const lines = (j.hits || [])
+      .map((h) => `${h.ts || ""} house=${h.house || "-"} n=${(h.hits || []).length}`)
+      .join("\n");
+    addBubble("engine", `Analog log (${j.count})\n${lines || "(empty)"}`);
+  });
+}
+
+const pubsBtn = document.getElementById("publishers");
+if (pubsBtn) {
+  pubsBtn.addEventListener("click", async () => {
+    const r = await fetch("/publishers");
+    const j = await r.json();
+    addBubble("engine", `Publishers live_fetch=${j.live_fetch}\n${(j.hosts || []).join("\n")}`);
+  });
+}
+
 refreshHealth();
