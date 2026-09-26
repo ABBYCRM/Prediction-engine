@@ -37,6 +37,7 @@ def match_facts(query: str, limit: int = 5) -> list[dict]:
                 str(fact.get("publisher") or ""),
                 str(fact.get("title") or ""),
                 str(fact.get("claim") or ""),
+                str(fact.get("url") or ""),
             ]
         ).lower()
         score = 0

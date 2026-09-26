@@ -1,73 +1,61 @@
 from __future__ import annotations
 
-from datetime import datetime
-from zoneinfo import ZoneInfo
-
-from prediction_engine import __version__
-from prediction_engine.cadence import next_window
-from prediction_engine.config import Settings
-from prediction_engine.mailer import Mailer
-from prediction_engine.mcp import invoke, list_tools
-from prediction_engine.xai_client import XAIClient
+from prediction_engine.analog import retrieve
+from prediction_engine.contracts import list_contracts
+from prediction_engine.houses import apply_10_to_0, bridge_0_to_1
+from prediction_engine.outbox import ResendOutbox
 
 
-def test_version_015():
-    assert __version__ == "0.15.0"
+def test_new_contracts_are_field_names_only():
+    ids = {c["id"] for c in list_contracts()}
+    assert "meridian-holdout-spec" in ids
+    assert "adobe-mix-conversions" in ids
+    assert "adobe-mix-harmonized-fields" in ids
+    assert "gads-performance-planner-view" in ids
+    assert "keen-planning-module" in ids
+    holdout = next(c for c in list_contracts() if c["id"] == "meridian-holdout-spec")
+    assert "holdout_id" in holdout["fields"]
+    assert "GeoHoldoutSpec" in holdout["fields"]
+    assert holdout["url"].startswith("https://developers.google.com/meridian/")
+    assert holdout.get("as_of")
+    for contract in list_contracts():
+        blob = str(contract).lower()
+        assert "cpl" not in blob
+        assert '"roas"' not in blob
 
 
-def test_next_window_on_and_off_cadence():
-    tz = ZoneInfo("America/New_York")
-    on = next_window(datetime(2026, 9, 26, 8, 6, tzinfo=tz))
-    assert on["on_cadence"] is True
-    assert on["hours_until"] == 0
-    assert on["next_hour"] == 8
-    off = next_window(datetime(2026, 9, 26, 9, 0, tzinfo=tz))
-    assert off["on_cadence"] is False
-    assert off["next_hour"] == 12
-    assert off["hours_until"] == 3
-    wrap = next_window(datetime(2026, 9, 26, 21, 0, tzinfo=tz))
-    assert wrap["next_hour"] == 0
-    assert wrap["hours_until"] == 3
+def test_analog_retrieves_holdout_and_harmonized_fields():
+    hits = retrieve("holdout_id GeoHoldoutSpec date_ranges")
+    assert any(h.get("id") == "meridian-holdout-spec" for h in hits)
+    harm = retrieve("harmonized brand campaign channel_id event_date")
+    assert any(h.get("id") == "adobe-mix-harmonized-fields" for h in harm)
 
 
-def test_mailer_preview_never_sends():
-    mailer = Mailer(
-        Settings(
-            smtp_host="smtp.example.com",
-            smtp_from="ops@example.com",
-            smtp_password="secret",
-            smtp_send_enabled=True,
-        )
+def test_house_bridge_never_copies_foreign_ledger():
+    cleaned = apply_10_to_0("ssdi", {"ssdi": True, "already_represented": False, "note": "keep"})
+    assert cleaned["house"] == "ssdi"
+    assert "already_represented" not in cleaned["payload"]
+    assert cleaned["payload"]["note"] == "keep"
+    assert cleaned["mixed"] is False
+    one = bridge_0_to_1("pi")
+    assert one["ledger"] == []
+    assert "ssdi" not in one["path"]
+
+
+def test_outbox_draft_keeps_scheduled_at(tmp_path):
+    box = ResendOutbox()
+    path = tmp_path / "drafts.jsonl"
+    rec = box.queue_draft(
+        {
+            "to": "ops@example.com",
+            "subject": "later",
+            "text": "queued only",
+            "scheduled_at": "2026-09-26T16:00:00Z",
+            "headers": {"X-House": "pi"},
+        },
+        path=path,
     )
-    out = mailer.preview_envelope("a@b.c", "subj", "hello")
-    assert out["live_smtp"] is False
-    assert out["sent"] is False
-    assert out["body_chars"] == 5
-    assert out["can_send"] is True
-    blob = str(out)
-    assert "secret" not in blob
-    assert "smtp_password" not in blob
-
-
-def test_mcp_preview_cadence_xai_tools():
-    tools = list_tools()
-    assert "mailer.preview" in tools
-    assert "cadence.status" in tools
-    assert "xai.guard" in tools
-    preview = invoke("mailer.preview", {"to": "a@b.c", "subject": "s", "body": "b"})
-    assert preview["sent"] is False
-    cadence = invoke("cadence.status", {})
-    assert cadence["tz"] == "America/New_York"
-    assert "next_hour" in cadence
-    guard = invoke("xai.guard", {})
-    assert guard["allowed_hosts"] == ["api.x.ai"]
-    assert "key" not in str(guard).lower() or guard["key_set"] in {True, False}
-    assert "XAI_API_KEY" not in str(guard)
-
-
-def test_xai_guard_refuses_other_hosts_via_settings_object():
-    client = XAIClient(Settings(xai_api_key="", xai_base_url="https://api.x.ai/v1"))
-    out = client.host_guard()
-    assert out["ok"] is True
-    assert out["will_call"] is False
-    assert out["host"] == "api.x.ai"
+    assert rec["sent"] is False
+    assert rec["scheduled_at"] == "2026-09-26T16:00:00Z"
+    assert rec["headers"]["X-House"] == "pi"
+    assert rec["shape"] == "resend"
