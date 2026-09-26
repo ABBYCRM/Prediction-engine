@@ -55,6 +55,40 @@ def append_local(row: dict[str, Any], path: Path | None = None) -> Path:
     return dest
 
 
+def live_client_contract() -> dict[str, Any]:
+    """Google Sheets API values.append field names only. No live numbers."""
+    return {
+        "api": "sheets.spreadsheets.values.append",
+        "url": "https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append",
+        "as_of": "2026-09-26",
+        "path_fields": ["spreadsheetId", "range"],
+        "query_fields": ["valueInputOption", "insertDataOption", "includeValuesInResponse"],
+        "body_fields": ["range", "majorDimension", "values"],
+        "valueInputOption": ["RAW", "USER_ENTERED"],
+        "insertDataOption": ["OVERWRITE", "INSERT_ROWS"],
+        "live": False,
+    }
+
+
+def preview_values_append(row: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Describe a values.append payload. Never calls Google."""
+    contract = live_client_contract()
+    validated = None
+    if row:
+        try:
+            validated = validate_row(row)
+        except WritebackError as exc:
+            raise SheetsError(str(exc)) from exc
+    return {
+        "ok": True,
+        "remote": False,
+        "wired": False,
+        "contract": contract,
+        "row": validated,
+        "ready": google_sheets_ready(),
+    }
+
+
 def write_row(row: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
     """Route a validated row. Sheets target requires OAuth; otherwise local_jsonl."""
     try:
@@ -64,8 +98,6 @@ def write_row(row: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
     target = validated["target"]
     if target == "sheets":
         require_google_sheets()
-        # Tokens present: still no live Google API client in this slice.
-        # Refuse network write until a dedicated client is added after Luis signs off.
         raise SheetsError(
             "OAuth present but live Sheets client is not wired; no remote write"
         )
