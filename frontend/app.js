@@ -36,7 +36,11 @@ form.addEventListener("submit", async (e) => {
     const r = await fetch("/predict", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, house: house || undefined }),
+      body: JSON.stringify({
+        query,
+        house: house || undefined,
+        live_scrape: !!(document.getElementById("live_scrape") || {}).checked,
+      }),
     });
     const j = await r.json();
     const raw = j.answer || j.error || "no answer";
@@ -95,6 +99,24 @@ if (pubsBtn) {
     const r = await fetch("/publishers");
     const j = await r.json();
     addBubble("engine", `Publishers live_fetch=${j.live_fetch}\n${(j.hosts || []).join("\n")}`);
+  });
+}
+
+const bridgeBtn = document.getElementById("bridge");
+if (bridgeBtn) {
+  bridgeBtn.addEventListener("click", async () => {
+    const house = (document.getElementById("house") || {}).value || "";
+    if (!house) {
+      addBubble("engine", "Select PI or SSDI before bridging.");
+      return;
+    }
+    const r = await fetch("/house/bridge", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ house, mode: "10_to_0" }),
+    });
+    const j = await r.json();
+    addBubble("engine", `House bridge ${j.mode || ""} keep=${(j.keep || []).join(",")} drop=${(j.drop || []).join(",")}`);
   });
 }
 
