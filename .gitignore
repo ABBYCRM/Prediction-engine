@@ -6,6 +6,7 @@ __pycache__/
 data/analog_hits.jsonl
 data/writeback_ledger.jsonl
 data/outbox_drafts.jsonl
+data/calibration_ledger.jsonl
 data/house_ledgers/
 *.egg-info/
 dist/
