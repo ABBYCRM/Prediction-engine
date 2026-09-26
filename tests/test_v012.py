@@ -7,8 +7,8 @@ from prediction_engine.houses import bridge_0_to_1, bridge_10_to_0
 from prediction_engine.mcp import invoke
 
 
-def test_version_is_012():
-    assert __version__ == "0.12.0"
+def test_version_is_013():
+    assert __version__ == "0.13.0"
 
 
 def test_geox_and_robyn_contracts_present():

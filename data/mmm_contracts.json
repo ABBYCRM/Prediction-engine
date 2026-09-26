@@ -1,7 +1,7 @@
 {
   "version": 1,
   "disclaimer": "Field names and planning parameters copied from public product docs. No performance numbers.",
-  "as_of": "2026-09-25",
+  "as_of": "2026-09-26",
   "contracts": [
     {"id": "meridian-input-axes", "product": "Google Meridian", "title": "MMM input axes", "fields": ["time", "geo", "kpi", "revenue_per_kpi", "population", "controls", "media_impressions", "media_spend", "organic_media", "non_media_treatments", "reach", "frequency"], "url": "https://developers.google.com/meridian/docs/basics/meridian-introduction", "as_of": "2026-07-09"},
     {"id": "meridian-unified-schema", "product": "Google Meridian", "title": "Unified Schema marketing data point", "fields": ["geo_info", "date_interval", "kpi", "control_variables", "media_variables", "non_media_variables", "reach_frequency_variables", "media_spend"], "url": "https://developers.google.com/meridian/docs/user-guide/mmm-unified-schema", "as_of": "2026-05-15"},
@@ -20,6 +20,11 @@
     {"id": "meridian-modelspec-axes", "product": "Google Meridian", "title": "ModelSpec argument names", "fields": ["media_effects_dist", "hill_before_adstock", "max_lag", "unique_sigma_for_each_geo", "media_prior_type", "holdout_id", "adstock_decay_spec", "enable_aks", "knots", "baseline_geo"], "url": "https://developers.google.com/meridian/docs/advanced-modeling/intro", "as_of": "2026-09-05"},
     {"id": "meridian-unified-opt", "product": "Google Meridian", "title": "Unified Schema optimization message names", "fields": ["BudgetOptimization", "IncrementalOutcomeGrid", "channel_result", "budget_constraints"], "url": "https://developers.google.com/meridian/docs/user-guide/mmm-unified-schema", "as_of": "2026-05-15"},
     {"id": "robyn-window-refresh", "product": "Meta Robyn", "title": "Model window and refresh argument names", "fields": ["window_start", "window_end", "robyn_refresh", "NRMSE", "DECOMP.RSSD", "prophet_country"], "url": "https://facebookexperimental.github.io/Robyn/docs/features/", "as_of": "2024-12-20"},
-    {"id": "robyn-calibration-point", "product": "Meta Robyn", "title": "Calibration study point-estimate inputs", "fields": ["starting_date", "end_date", "incremental_response"], "url": "https://facebookexperimental.github.io/Robyn/docs/analysts-guide-to-MMM/", "as_of": "2024-12-20"}
+    {"id": "robyn-calibration-point", "product": "Meta Robyn", "title": "Calibration study point-estimate inputs", "fields": ["starting_date", "end_date", "incremental_response"], "url": "https://facebookexperimental.github.io/Robyn/docs/analysts-guide-to-MMM/", "as_of": "2024-12-20"},
+    {"id": "robyn-calibration-input", "product": "Meta Robyn", "title": "calibration_input data.frame column names", "fields": ["channel", "liftStartDate", "liftEndDate", "liftAbs", "spend", "confidence", "metric", "calibration_scope"], "url": "https://cran.r-project.org/web/packages/Robyn/refman/Robyn.html", "as_of": "2026-08-17"},
+    {"id": "gads-reach-planner", "product": "Google Ads Reach Planner", "title": "Reach Planner forecast input names", "fields": ["audience", "budget", "geographic_location", "product_mix", "forecast_window_max_92_days"], "url": "https://support.google.com/google-ads/answer/9808024", "as_of": "2026-09-26"},
+    {"id": "gads-campaign-to-forecast", "product": "Google Ads API Keyword Forecast", "title": "CampaignToForecast message field names", "fields": ["ad_groups", "bidding_strategy", "conversion_rate", "geo_modifiers", "keyword_plan_network", "language_constants", "negative_keywords"], "url": "https://developers.google.com/google-ads/api/reference/rpc/v20/CampaignToForecast", "as_of": "2025-12-12"},
+    {"id": "adobe-mix-goal-plan", "product": "Adobe Mix Modeler", "title": "Goal and budget plan setup names", "fields": ["plan_name", "model", "date_range", "budget", "maximize_budget", "conversion", "target_metric"], "url": "https://experienceleague.adobe.com/en/docs/mix-modeler/using/plans/insights", "as_of": "2025-09-30"},
+    {"id": "gads-conversion-lift-holdout", "product": "Google Ads Conversion Lift", "title": "User-based lift study power axes", "fields": ["selected_conversion_actions", "daily_campaign_budget", "study_duration", "holdback_percentage"], "url": "https://support.google.com/google-ads/answer/12005564", "as_of": "2026-09-26"}
   ]
 }
