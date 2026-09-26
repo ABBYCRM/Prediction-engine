@@ -16,7 +16,15 @@ def load_playbook() -> dict:
 
 
 def list_facts() -> list[dict]:
-    return list(load_playbook().get("facts") or [])
+    pack = load_playbook()
+    as_of = pack.get("as_of")
+    facts = []
+    for fact in pack.get("facts") or []:
+        row = dict(fact)
+        if as_of and not row.get("as_of"):
+            row["as_of"] = as_of
+        facts.append(row)
+    return facts
 
 
 def match_facts(query: str, limit: int = 5) -> list[dict]:

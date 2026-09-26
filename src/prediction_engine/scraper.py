@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 
 import httpx
 
-from prediction_engine.browser import snapshot_html
+from prediction_engine.browser import chrome_available, chrome_dump_dom, snapshot_html
 from prediction_engine.publishers import is_allowlisted_publisher_url
 
 BLOCKED_SCHEMES = frozenset({"file", "ftp", "gopher", "data", "javascript"})
@@ -58,10 +58,15 @@ def fetch_text(url: str, timeout: float = 10.0) -> str:
         return resp.text
 
 
-def scrape_public(url: str, timeout: float = 10.0) -> dict:
+def scrape_public(url: str, timeout: float = 10.0, prefer_chrome: bool = True) -> dict:
     """SSRF first; publisher allowlist second; snapshot text only. No metrics."""
     assert_public_http_url(url)
     if not is_allowlisted_publisher_url(url):
         raise SSRFError(f"publisher not allowlisted: {url}")
+    if prefer_chrome and chrome_available():
+        dumped = chrome_dump_dom(url, timeout=max(timeout, 15.0))
+        if dumped.get("fetched"):
+            dumped.setdefault("via", "chrome")
+            return dumped
     html = fetch_text(url, timeout=timeout)
-    return {"url": url, "text": snapshot_html(html), "fetched": True}
+    return {"url": url, "text": snapshot_html(html), "fetched": True, "via": "httpx", "chrome": chrome_available()}
