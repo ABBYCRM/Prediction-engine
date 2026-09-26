@@ -3,4 +3,4 @@
 from prediction_engine.engine import PredictionEngine, PredictionResult
 
 __all__ = ["PredictionEngine", "PredictionResult"]
-__version__ = "0.12.0"
+__version__ = "0.13.0"
