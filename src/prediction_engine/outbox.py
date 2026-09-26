@@ -16,6 +16,14 @@ class OutboxError(MailerError):
     pass
 
 
+def _as_list(value) -> list[str]:
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    if isinstance(value, list):
+        return [str(x).strip() for x in value if str(x).strip()]
+    return []
+
+
 def normalize(payload: dict) -> dict:
     to = payload.get("to")
     if isinstance(to, str):
@@ -28,12 +36,23 @@ def normalize(payload: dict) -> dict:
     text = payload.get("text") or payload.get("body") or ""
     if html and not text:
         text = str(html)
+    tags = payload.get("tags") or []
+    if isinstance(tags, dict):
+        tags = [{"name": str(k), "value": str(v)} for k, v in tags.items()]
+    elif isinstance(tags, list):
+        tags = list(tags)
+    else:
+        tags = []
     return {
         "from": str(payload.get("from") or ""),
         "to": to_list,
+        "cc": _as_list(payload.get("cc")),
+        "bcc": _as_list(payload.get("bcc")),
+        "reply_to": _as_list(payload.get("reply_to") or payload.get("replyTo")),
         "subject": str(payload.get("subject") or ""),
         "html": html,
         "text": str(text),
+        "tags": tags,
     }
 
 
@@ -58,6 +77,10 @@ class ResendOutbox:
         result["shape"] = "resend"
         result["from"] = sender
         result["to"] = msg["to"]
+        result["cc"] = msg["cc"]
+        result["bcc"] = msg["bcc"]
+        result["reply_to"] = msg["reply_to"]
+        result["tags"] = msg["tags"]
         return result
 
     def queue_draft(self, payload: dict, path: Path | None = None) -> dict:
@@ -74,8 +97,24 @@ class ResendOutbox:
             "sent": False,
             "from": msg["from"],
             "to": msg["to"],
+            "cc": msg["cc"],
+            "bcc": msg["bcc"],
+            "reply_to": msg["reply_to"],
             "subject": msg["subject"],
+            "tags": msg["tags"],
         }
         with target.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(record, ensure_ascii=True) + "\n")
         return record
+
+    def list_drafts(self, path: Path | None = None, limit: int = 50) -> list[dict]:
+        target = path or DRAFTS_PATH
+        if not target.is_file():
+            return []
+        rows = []
+        for line in target.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            rows.append(json.loads(line))
+        return rows[-max(1, min(limit, 200)) :]

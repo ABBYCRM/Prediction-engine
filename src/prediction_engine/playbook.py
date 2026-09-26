@@ -17,7 +17,7 @@ def load_playbook() -> dict:
 
 def list_facts() -> list[dict]:
     pack = load_playbook()
-    as_of = pack.get("as_of")
+    as_of = pack.get("as_of") or "2026-09-25"
     facts = []
     for fact in pack.get("facts") or []:
         row = dict(fact)
