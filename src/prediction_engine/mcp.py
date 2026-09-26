@@ -13,7 +13,8 @@ from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
 from prediction_engine.ledger import read_ledger
 from prediction_engine.publishers import list_publishers
-from prediction_engine.sheets import SheetsError, write_row
+from prediction_engine.mailer import Mailer
+from prediction_engine.sheets import SheetsError, preview_values_append, write_row
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
 
@@ -29,6 +30,8 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "publishers.list": set(),
     "contracts.list": set(),
     "house.bridge": {"house", "mode", "payload"},
+    "mailer.status": set(),
+    "sheets.preview": {"row"},
 }
 
 
@@ -124,6 +127,20 @@ def _ledger_read(args: dict[str, Any]) -> dict[str, Any]:
     return {"count": len(rows), "rows": rows, "remote": False}
 
 
+def _mailer_status(_args: dict[str, Any]) -> dict[str, Any]:
+    return Mailer().status()
+
+
+def _sheets_preview(args: dict[str, Any]) -> dict[str, Any]:
+    row = args.get("row")
+    if row is not None and not isinstance(row, dict):
+        return {"error": "row must be an object", "remote": False}
+    try:
+        return preview_values_append(row if isinstance(row, dict) else None)
+    except SheetsError as exc:
+        return {"error": str(exc), "remote": False}
+
+
 def _sheets_write(args: dict[str, Any]) -> dict[str, Any]:
     row = args.get("row") or {}
     if not isinstance(row, dict):
@@ -146,6 +163,8 @@ HANDLERS: dict[str, ToolFn] = {
     "publishers.list": _publishers_list,
     "contracts.list": _contracts_list,
     "house.bridge": _house_bridge,
+    "mailer.status": _mailer_status,
+    "sheets.preview": _sheets_preview,
 }
 
 
