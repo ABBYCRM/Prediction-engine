@@ -25,6 +25,7 @@ from prediction_engine.ledger import ledger_summary, read_ledger
 from prediction_engine.publishers import list_publishers
 from prediction_engine.mailer import Mailer
 from prediction_engine.sheets import SheetsError, preview_values_append, write_row
+from prediction_engine.xai_client import XAIClient
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend"
 ENGINE = PredictionEngine()
@@ -102,6 +103,12 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/mailer":
             self._json(200, Mailer().status())
+            return
+        if path == "/cadence":
+            self._json(200, cadence_status())
+            return
+        if path == "/xai":
+            self._json(200, XAIClient().host_guard())
             return
         if path == "/sheets/preview":
             self._json(200, preview_values_append())

@@ -13,8 +13,10 @@ from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
 from prediction_engine.ledger import read_ledger
 from prediction_engine.publishers import list_publishers
+from prediction_engine.cadence import cadence_status
 from prediction_engine.mailer import Mailer
 from prediction_engine.sheets import SheetsError, preview_values_append, write_row
+from prediction_engine.xai_client import XAIClient
 
 ToolFn = Callable[[dict[str, Any]], dict[str, Any]]
 
@@ -31,7 +33,10 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "contracts.list": set(),
     "house.bridge": {"house", "mode", "payload"},
     "mailer.status": set(),
+    "mailer.preview": {"to", "subject", "body"},
     "sheets.preview": {"row"},
+    "cadence.status": set(),
+    "xai.guard": set(),
 }
 
 
@@ -131,6 +136,22 @@ def _mailer_status(_args: dict[str, Any]) -> dict[str, Any]:
     return Mailer().status()
 
 
+def _mailer_preview(args: dict[str, Any]) -> dict[str, Any]:
+    return Mailer().preview_envelope(
+        str(args.get("to") or ""),
+        str(args.get("subject") or ""),
+        str(args.get("body") or ""),
+    )
+
+
+def _cadence_status(_args: dict[str, Any]) -> dict[str, Any]:
+    return cadence_status()
+
+
+def _xai_guard(_args: dict[str, Any]) -> dict[str, Any]:
+    return XAIClient().host_guard()
+
+
 def _sheets_preview(args: dict[str, Any]) -> dict[str, Any]:
     row = args.get("row")
     if row is not None and not isinstance(row, dict):
@@ -164,7 +185,10 @@ HANDLERS: dict[str, ToolFn] = {
     "contracts.list": _contracts_list,
     "house.bridge": _house_bridge,
     "mailer.status": _mailer_status,
+    "mailer.preview": _mailer_preview,
     "sheets.preview": _sheets_preview,
+    "cadence.status": _cadence_status,
+    "xai.guard": _xai_guard,
 }
 
 
