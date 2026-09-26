@@ -23,7 +23,8 @@ from prediction_engine.contracts import list_contracts
 from prediction_engine.playbook import list_facts
 from prediction_engine.ledger import ledger_summary, read_ledger
 from prediction_engine.publishers import list_publishers
-from prediction_engine.sheets import SheetsError, write_row
+from prediction_engine.mailer import Mailer
+from prediction_engine.sheets import SheetsError, preview_values_append, write_row
 
 FRONTEND = Path(__file__).resolve().parents[2] / "frontend"
 ENGINE = PredictionEngine()
@@ -75,6 +76,7 @@ class Handler(BaseHTTPRequestHandler):
                         "google_sheets": google_sheets_status().present,
                         "meta_ads": meta_ads_status().present,
                     },
+                    "mailer": Mailer(settings).status(),
                 },
             )
             return
@@ -97,6 +99,12 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/contracts":
             rows = list_contracts()
             self._json(200, {"count": len(rows), "contracts": rows, "live_numbers": False})
+            return
+        if path == "/mailer":
+            self._json(200, Mailer().status())
+            return
+        if path == "/sheets/preview":
+            self._json(200, preview_values_append())
             return
         if path == "/ledger":
             summary = ledger_summary()
