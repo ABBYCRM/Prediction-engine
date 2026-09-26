@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from prediction_engine.analog_store import read_hits
+from prediction_engine.analog_store import hit_summary, read_hits
 from prediction_engine.contracts import list_contracts
 from prediction_engine.houses import HouseError, bridge_0_to_1, bridge_10_to_0
 from prediction_engine.domain.intake_rules import ccfl_hard_stop, ssdi_intake_ok
@@ -42,6 +42,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "calibration.record": {"p", "y", "house", "query"},
     "calibration.summary": {"house"},
     "ledger.append": {"row"},
+    "analog.summary": {"house"},
 }
 
 
@@ -87,6 +88,12 @@ def _engine_predict(args: dict[str, Any]) -> dict[str, Any]:
         "live_scrape": live,
         "house": result.house,
     }
+
+
+def _analog_summary(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    return hit_summary(house=house_s)
 
 
 def _analog_log(args: dict[str, Any]) -> dict[str, Any]:
@@ -212,6 +219,7 @@ HANDLERS: dict[str, ToolFn] = {
     "intake.ssdi": _intake_ssdi,
     "engine.predict": _engine_predict,
     "analog.log": _analog_log,
+    "analog.summary": _analog_summary,
     "sheets.write": _sheets_write,
     "ledger.read": _ledger_read,
     "publishers.list": _publishers_list,
