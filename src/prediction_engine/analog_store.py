@@ -80,11 +80,17 @@ def hit_summary(path: Path | None = None, house: str | None = None) -> dict:
             hid = item.get("id")
             if hid:
                 ids.add(str(hid))
+    last_ts = None
+    for row in rows:
+        ts = row.get("ts")
+        if ts and (last_ts is None or str(ts) > str(last_ts)):
+            last_ts = ts
     return {
         "queries": len(rows),
         "hits": n_hits,
         "unique_ids": len(ids),
         "by_kind": by_kind,
+        "last_ts": last_ts,
         "house": house,
         "invented_market": False,
     }
