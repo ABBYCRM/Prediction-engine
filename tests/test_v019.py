@@ -11,7 +11,7 @@ from prediction_engine.mcp import invoke
 
 
 def test_version_is_019():
-    assert __version__ == "0.20.0"
+    assert __version__ == "0.21.0"
 
 
 def test_log_loss_from_caller_scores_only(tmp_path):
