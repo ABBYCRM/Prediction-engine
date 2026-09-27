@@ -41,6 +41,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "xai.guard": set(),
     "calibration.record": {"p", "y", "house", "query"},
     "calibration.summary": {"house"},
+    "calibration.reliability": {"house"},
     "ledger.append": {"row"},
     "analog.summary": {"house"},
 }
@@ -182,6 +183,19 @@ def _calibration_summary(args: dict[str, Any]) -> dict[str, Any]:
     return cal_summary(house=house_s)
 
 
+def _calibration_reliability(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "ece": stats.get("ece"),
+        "buckets": stats.get("buckets"),
+        "invented_market": False,
+    }
+
+
 def _ledger_append(args: dict[str, Any]) -> dict[str, Any]:
     row = args.get("row") or {}
     if not isinstance(row, dict):
@@ -232,6 +246,7 @@ HANDLERS: dict[str, ToolFn] = {
     "xai.guard": _xai_guard,
     "calibration.record": _calibration_record,
     "calibration.summary": _calibration_summary,
+    "calibration.reliability": _calibration_reliability,
     "ledger.append": _ledger_append,
 }
 
