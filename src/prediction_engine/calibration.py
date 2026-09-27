@@ -58,6 +58,13 @@ def mean_log_loss(rows: list[dict]) -> float | None:
     return sum(log_loss(float(r["p"]), int(r["y"])) for r in rows) / len(rows)
 
 
+def mean_abs_error(rows: list[dict]) -> float | None:
+    """Mean |p-y| on caller records only."""
+    if not rows:
+        return None
+    return sum(abs(float(r["p"]) - int(r["y"])) for r in rows) / len(rows)
+
+
 def record(
     p: Any,
     y: Any,
@@ -116,6 +123,7 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
             "mean_log_loss": None,
             "mean_p": None,
             "mean_y": None,
+            "mean_abs_error": None,
             "ece": None,
             "house": house,
             "invented_market": False,
@@ -131,6 +139,7 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
         "mean_log_loss": mean_log_loss(rows),
         "mean_p": mean_p,
         "mean_y": mean_y,
+        "mean_abs_error": mean_abs_error(rows),
         "ece": expected_calibration_error(buckets, n=len(rows)),
         "house": house,
         "invented_market": False,
