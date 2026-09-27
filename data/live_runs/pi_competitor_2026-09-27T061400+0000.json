@@ -1,0 +1,29 @@
+{
+  "house": "pi",
+  "kind": "competitor",
+  "as_of": "2026-09-27T06:14:00+00:00",
+  "xai_attempted": false,
+  "xai_error": "XAI_API_KEY unset; no api.x.ai call",
+  "note": "Live GET of Google Ads policy pages. No bids.",
+  "items": [
+    {
+      "kind": "fact",
+      "claim": "Public page title as of 2026-09-27: Google Ads policies - Advertising Policies Help",
+      "url": "https://support.google.com/adspolicy/answer/6008942",
+      "as_of": "2026-09-27",
+      "http_status": 200,
+      "fetched": true,
+      "title": "Google Ads policies - Advertising Policies Help"
+    },
+    {
+      "kind": "fact",
+      "claim": "Public page title as of 2026-09-27: Healthcare and medicines - Advertising Policies Help",
+      "url": "https://support.google.com/adspolicy/answer/176031",
+      "as_of": "2026-09-27",
+      "http_status": 200,
+      "fetched": true,
+      "title": "Healthcare and medicines - Advertising Policies Help"
+    }
+  ],
+  "mixed_house": false
+}

@@ -1,0 +1,29 @@
+{
+  "house": "ssdi",
+  "kind": "competitor",
+  "as_of": "2026-09-27T06:14:00+00:00",
+  "xai_attempted": false,
+  "xai_error": "XAI_API_KEY unset; no api.x.ai call",
+  "note": "Live GET of SSA disability pages. No bids.",
+  "items": [
+    {
+      "kind": "fact",
+      "claim": "Public page title as of 2026-09-27: Disability | SSA",
+      "url": "https://www.ssa.gov/disability/",
+      "as_of": "2026-09-27",
+      "http_status": 200,
+      "fetched": true,
+      "title": "Disability | SSA"
+    },
+    {
+      "kind": "fact",
+      "claim": "Public page title as of 2026-09-27: Disability | SSA",
+      "url": "https://www.ssa.gov/benefits/disability/",
+      "as_of": "2026-09-27",
+      "http_status": 200,
+      "fetched": true,
+      "title": "Disability | SSA"
+    }
+  ],
+  "mixed_house": false
+}
