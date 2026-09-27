@@ -8,7 +8,7 @@ from prediction_engine.mcp import invoke
 
 
 def test_version_is_016():
-    assert __version__ == "0.20.0"
+    assert __version__ == "0.21.0"
 
 
 def test_geox_and_robyn_contracts_present():
