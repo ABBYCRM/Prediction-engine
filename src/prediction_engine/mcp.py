@@ -42,6 +42,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "calibration.record": {"p", "y", "house", "query"},
     "calibration.summary": {"house"},
     "calibration.reliability": {"house"},
+    "calibration.log_loss": {"house"},
     "ledger.append": {"row"},
     "analog.summary": {"house"},
 }
@@ -196,6 +197,18 @@ def _calibration_reliability(args: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _calibration_log_loss(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_log_loss": stats.get("mean_log_loss"),
+        "invented_market": False,
+    }
+
+
 def _ledger_append(args: dict[str, Any]) -> dict[str, Any]:
     row = args.get("row") or {}
     if not isinstance(row, dict):
@@ -247,6 +260,7 @@ HANDLERS: dict[str, ToolFn] = {
     "calibration.record": _calibration_record,
     "calibration.summary": _calibration_summary,
     "calibration.reliability": _calibration_reliability,
+    "calibration.log_loss": _calibration_log_loss,
     "ledger.append": _ledger_append,
 }
 
