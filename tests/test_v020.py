@@ -10,7 +10,7 @@ from prediction_engine.writeback import row_values, sheet_header, validate_row
 
 
 def test_version_is_020():
-    assert __version__ == "0.22.0"
+    assert __version__ == "0.23.0"
 
 
 def test_writeback_sheet_header_and_values():
