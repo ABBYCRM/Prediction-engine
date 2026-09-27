@@ -13,6 +13,7 @@ from prediction_engine.oauth import OAuthError
 from prediction_engine.playbook import list_facts, match_facts
 from prediction_engine.calibration import CalibrationError, record as cal_record, summary as cal_summary
 from prediction_engine.ledger import append_local, read_ledger
+from prediction_engine.research import list_run_index, sources_for
 from prediction_engine.writeback import WritebackError
 from prediction_engine.publishers import list_publishers
 from prediction_engine.cadence import cadence_status
@@ -45,6 +46,9 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "calibration.log_loss": {"house"},
     "ledger.append": {"row"},
     "analog.summary": {"house"},
+    "research.list": {"house"},
+    "research.sources": {"house"},
+    "calibration.brier": {"house"},
 }
 
 
@@ -197,6 +201,39 @@ def _calibration_reliability(args: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _research_list(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    return list_run_index(house_s)
+
+
+def _research_sources(args: dict[str, Any]) -> dict[str, Any]:
+    house = str(args.get("house") or "")
+    try:
+        urls = list(sources_for(house))
+    except HouseError as exc:
+        return {"error": str(exc), "invented_market": False}
+    return {
+        "house": house,
+        "urls": urls,
+        "count": len(urls),
+        "invented_market": False,
+        "fetched": False,
+    }
+
+
+def _calibration_brier(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_brier": stats.get("mean_brier"),
+        "invented_market": False,
+    }
+
+
 def _calibration_log_loss(args: dict[str, Any]) -> dict[str, Any]:
     house = args.get("house")
     house_s = str(house).strip() if house else None
@@ -262,6 +299,9 @@ HANDLERS: dict[str, ToolFn] = {
     "calibration.reliability": _calibration_reliability,
     "calibration.log_loss": _calibration_log_loss,
     "ledger.append": _ledger_append,
+    "research.list": _research_list,
+    "research.sources": _research_sources,
+    "calibration.brier": _calibration_brier,
 }
 
 
