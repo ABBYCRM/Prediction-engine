@@ -65,6 +65,7 @@ def hit_summary(path: Path | None = None, house: str | None = None) -> dict:
     """Count analog retrievals only. No CPL/ROAS."""
     rows = read_hits(path=path, limit=200, house=house)
     n_hits = 0
+    max_hits = 0
     by_kind: dict[str, int] = {}
     ids: set[str] = set()
     for row in rows:
@@ -72,6 +73,8 @@ def hit_summary(path: Path | None = None, house: str | None = None) -> dict:
         if not isinstance(hits, list):
             continue
         n_hits += len(hits)
+        if len(hits) > max_hits:
+            max_hits = len(hits)
         for item in hits:
             if not isinstance(item, dict):
                 continue
@@ -98,6 +101,7 @@ def hit_summary(path: Path | None = None, house: str | None = None) -> dict:
         "hits": n_hits,
         "unique_ids": len(ids),
         "mean_hits_per_query": mean_hits,
+        "max_hits_in_query": max_hits if n_q else None,
         "by_kind": by_kind,
         "first_ts": first_ts,
         "last_ts": last_ts,
