@@ -76,3 +76,21 @@ def require_google_sheets() -> TokenBundle:
             "GOOGLE_SHEETS_SPREADSHEET_ID"
         )
     return status
+
+
+def google_ads_live_get(path: str) -> dict:
+    """Refuse remote Google Ads calls unless the OAuth quartet is present."""
+    require_google_ads()
+    raise OAuthError(
+        f"Google Ads live GET {path} not executed this slice; tokens present but "
+        "no campaign request was authorized"
+    )
+
+
+def meta_ads_live_get(path: str) -> dict:
+    """Refuse remote Meta Marketing API calls unless tokens are present."""
+    require_meta_ads()
+    raise OAuthError(
+        f"Meta Ads live GET {path} not executed this slice; tokens present but "
+        "no insights request was authorized"
+    )

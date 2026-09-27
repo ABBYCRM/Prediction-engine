@@ -12,6 +12,18 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = ROOT / "data" / "writeback_schema.json"
 
 ALLOWED_TARGETS = frozenset({"sheets", "hubspot_readonly_note", "local_jsonl"})
+COLUMN_ORDER = (
+    "house",
+    "kind",
+    "target",
+    "query",
+    "claim",
+    "url",
+    "as_of",
+    "used_xai",
+    "xai_model",
+    "note",
+)
 
 
 class WritebackError(ValueError):
@@ -46,3 +58,23 @@ def validate_row(row: dict[str, Any]) -> dict[str, Any]:
         "xai_model": row.get("xai_model"),
         "note": str(row.get("note") or ""),
     }
+
+
+def sheet_header() -> list[str]:
+    schema = load_schema()
+    cols = schema.get("column_order") or list(COLUMN_ORDER)
+    return [str(c) for c in cols]
+
+
+def row_values(row: dict[str, Any]) -> list[str]:
+    validated = validate_row(row)
+    out: list[str] = []
+    for col in sheet_header():
+        val = validated.get(col)
+        if val is None:
+            out.append("")
+        elif isinstance(val, bool):
+            out.append("true" if val else "false")
+        else:
+            out.append(str(val))
+    return out
