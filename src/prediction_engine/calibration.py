@@ -95,18 +95,39 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
         return {
             "count": 0,
             "mean_brier": None,
+            "ece": None,
             "house": house,
             "invented_market": False,
             "buckets": reliability_buckets([]),
         }
     mean = sum(float(r["brier"]) for r in rows) / len(rows)
+    buckets = reliability_buckets(rows)
     return {
         "count": len(rows),
         "mean_brier": mean,
+        "ece": expected_calibration_error(buckets, n=len(rows)),
         "house": house,
         "invented_market": False,
-        "buckets": reliability_buckets(rows),
+        "buckets": buckets,
     }
+
+
+def expected_calibration_error(buckets: list[dict], n: int | None = None) -> float | None:
+    """Weighted |mean_p - mean_y| over filled bins. Caller p/y only."""
+    filled = [b for b in buckets if int(b.get("count") or 0) > 0]
+    if not filled:
+        return None
+    total = n if n and n > 0 else sum(int(b["count"]) for b in filled)
+    if total <= 0:
+        return None
+    acc = 0.0
+    for b in filled:
+        mean_p = b.get("mean_p")
+        mean_y = b.get("mean_y")
+        if mean_p is None or mean_y is None:
+            continue
+        acc += (int(b["count"]) / total) * abs(float(mean_p) - float(mean_y))
+    return acc
 
 
 def reliability_buckets(rows: list[dict], n_bins: int = 5) -> list[dict]:
