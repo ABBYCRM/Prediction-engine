@@ -91,10 +91,13 @@ def hit_summary(path: Path | None = None, house: str | None = None) -> dict:
             last_ts = ts
         if first_ts is None or s < str(first_ts):
             first_ts = ts
+    n_q = len(rows)
+    mean_hits = (n_hits / n_q) if n_q else None
     return {
-        "queries": len(rows),
+        "queries": n_q,
         "hits": n_hits,
         "unique_ids": len(ids),
+        "mean_hits_per_query": mean_hits,
         "by_kind": by_kind,
         "first_ts": first_ts,
         "last_ts": last_ts,
