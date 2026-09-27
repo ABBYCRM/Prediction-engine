@@ -53,3 +53,314 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "calibration.mae": {"house"},
     "calibration.max_ae": {"house"},
 }
+
+
+def _playbook_list(_args: dict[str, Any]) -> dict[str, Any]:
+    facts = list_facts()
+    return {"count": len(facts), "facts": facts}
+
+
+def _playbook_match(args: dict[str, Any]) -> dict[str, Any]:
+    return {"matches": match_facts(str(args.get("query") or ""))}
+
+
+def _intake_ccfl(args: dict[str, Any]) -> dict[str, Any]:
+    payload = args.get("payload") or {}
+    if not isinstance(payload, dict):
+        return {"error": "payload must be an object"}
+    return ccfl_hard_stop(payload)
+
+
+def _intake_ssdi(args: dict[str, Any]) -> dict[str, Any]:
+    payload = args.get("payload") or {}
+    if not isinstance(payload, dict):
+        return {"error": "payload must be an object"}
+    return ssdi_intake_ok(payload)
+
+
+def _engine_predict(args: dict[str, Any]) -> dict[str, Any]:
+    query = str(args.get("query") or "").strip()
+    if not query:
+        return {"error": "query_required"}
+    live = bool(args.get("live_scrape"))
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    result = PredictionEngine().predict(query, live_scrape=live, house=house_s)
+    return {
+        "query": result.query,
+        "answer": result.answer,
+        "facts": result.facts,
+        "used_xai": result.used_xai,
+        "note": result.note,
+        "analogs": result.analogs,
+        "scrape": result.scrape,
+        "live_scrape": live,
+        "house": result.house,
+    }
+
+
+def _analog_summary(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    return hit_summary(house=house_s)
+
+
+def _analog_log(args: dict[str, Any]) -> dict[str, Any]:
+    raw = args.get("limit", 20)
+    try:
+        limit = int(raw)
+    except (TypeError, ValueError):
+        limit = 20
+    limit = max(1, min(limit, 50))
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    hits = read_hits(limit=limit, house=house_s)
+    return {"count": len(hits), "hits": hits, "house": house_s}
+
+
+def _publishers_list(_args: dict[str, Any]) -> dict[str, Any]:
+    return list_publishers()
+
+
+def _contracts_list(_args: dict[str, Any]) -> dict[str, Any]:
+    rows = list_contracts()
+    return {"count": len(rows), "contracts": rows}
+
+
+def _house_bridge(args: dict[str, Any]) -> dict[str, Any]:
+    house = str(args.get("house") or "")
+    mode = str(args.get("mode") or "10_to_0")
+    payload = args.get("payload")
+    if payload is not None and not isinstance(payload, dict):
+        return {"error": "payload must be an object", "mixed": True}
+    try:
+        if mode == "0_to_1":
+            return bridge_0_to_1(house)
+        return bridge_10_to_0(house, payload if isinstance(payload, dict) else None)
+    except HouseError as exc:
+        return {"error": str(exc), "mixed": True}
+
+
+def _ledger_read(args: dict[str, Any]) -> dict[str, Any]:
+    raw = args.get("limit", 20)
+    try:
+        limit = int(raw)
+    except (TypeError, ValueError):
+        limit = 20
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    rows = read_ledger(limit=limit, house=house_s)
+    return {"count": len(rows), "rows": rows, "remote": False}
+
+
+def _mailer_status(_args: dict[str, Any]) -> dict[str, Any]:
+    return Mailer().status()
+
+
+def _mailer_preview(args: dict[str, Any]) -> dict[str, Any]:
+    return Mailer().preview_envelope(
+        str(args.get("to") or ""),
+        str(args.get("subject") or ""),
+        str(args.get("body") or ""),
+    )
+
+
+def _cadence_status(_args: dict[str, Any]) -> dict[str, Any]:
+    return cadence_status()
+
+
+def _xai_guard(_args: dict[str, Any]) -> dict[str, Any]:
+    return XAIClient().host_guard()
+
+
+def _calibration_record(args: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return cal_record(
+            args.get("p"),
+            args.get("y"),
+            house=str(args.get("house") or ""),
+            query=str(args.get("query") or ""),
+        )
+    except (CalibrationError, HouseError) as exc:
+        return {"error": str(exc), "invented_market": False}
+
+
+def _calibration_summary(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    return cal_summary(house=house_s)
+
+
+def _calibration_reliability(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "ece": stats.get("ece"),
+        "buckets": stats.get("buckets"),
+        "invented_market": False,
+    }
+
+
+def _research_list(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    return list_run_index(house_s)
+
+
+def _research_sources(args: dict[str, Any]) -> dict[str, Any]:
+    house = str(args.get("house") or "")
+    try:
+        urls = list(sources_for(house))
+    except HouseError as exc:
+        return {"error": str(exc), "invented_market": False}
+    return {
+        "house": house,
+        "urls": urls,
+        "count": len(urls),
+        "invented_market": False,
+        "fetched": False,
+    }
+
+
+def _calibration_means(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_p": stats.get("mean_p"),
+        "mean_y": stats.get("mean_y"),
+        "invented_market": False,
+    }
+
+
+def _calibration_mae(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_abs_error": stats.get("mean_abs_error"),
+        "invented_market": False,
+    }
+
+
+def _calibration_max_ae(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "max_abs_error": stats.get("max_abs_error"),
+        "invented_market": False,
+    }
+
+
+def _calibration_brier(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_brier": stats.get("mean_brier"),
+        "invented_market": False,
+    }
+
+
+def _calibration_log_loss(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_log_loss": stats.get("mean_log_loss"),
+        "invented_market": False,
+    }
+
+
+def _ledger_append(args: dict[str, Any]) -> dict[str, Any]:
+    row = args.get("row") or {}
+    if not isinstance(row, dict):
+        return {"error": "row must be an object", "remote": False}
+    try:
+        return append_local(row)
+    except (WritebackError, HouseError) as exc:
+        return {"error": str(exc), "remote": False}
+
+
+def _sheets_preview(args: dict[str, Any]) -> dict[str, Any]:
+    row = args.get("row")
+    if row is not None and not isinstance(row, dict):
+        return {"error": "row must be an object", "remote": False}
+    try:
+        return preview_values_append(row if isinstance(row, dict) else None)
+    except SheetsError as exc:
+        return {"error": str(exc), "remote": False}
+
+
+def _sheets_write(args: dict[str, Any]) -> dict[str, Any]:
+    row = args.get("row") or {}
+    if not isinstance(row, dict):
+        return {"error": "row must be an object"}
+    try:
+        return write_row(row)
+    except (SheetsError, OAuthError) as exc:
+        return {"error": str(exc), "remote": False}
+
+
+HANDLERS: dict[str, ToolFn] = {
+    "playbook.list": _playbook_list,
+    "playbook.match": _playbook_match,
+    "intake.ccfl": _intake_ccfl,
+    "intake.ssdi": _intake_ssdi,
+    "engine.predict": _engine_predict,
+    "analog.log": _analog_log,
+    "analog.summary": _analog_summary,
+    "sheets.write": _sheets_write,
+    "ledger.read": _ledger_read,
+    "publishers.list": _publishers_list,
+    "contracts.list": _contracts_list,
+    "house.bridge": _house_bridge,
+    "mailer.status": _mailer_status,
+    "mailer.preview": _mailer_preview,
+    "sheets.preview": _sheets_preview,
+    "cadence.status": _cadence_status,
+    "xai.guard": _xai_guard,
+    "calibration.record": _calibration_record,
+    "calibration.summary": _calibration_summary,
+    "calibration.reliability": _calibration_reliability,
+    "calibration.log_loss": _calibration_log_loss,
+    "ledger.append": _ledger_append,
+    "research.list": _research_list,
+    "research.sources": _research_sources,
+    "calibration.brier": _calibration_brier,
+    "calibration.means": _calibration_means,
+    "calibration.mae": _calibration_mae,
+    "calibration.max_ae": _calibration_max_ae,
+}
+
+
+def list_tools() -> list[str]:
+    return sorted(ALLOWED_TOOLS)
+
+
+class MCPError(ValueError):
+    pass
+
+
+def invoke(tool: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
+    if tool not in ALLOWED_TOOLS:
+        raise MCPError(f"unknown tool: {tool}")
+    args = dict(arguments or {})
+    extra = set(args) - ALLOWED_TOOLS[tool]
+    if extra:
+        raise MCPError(f"extra keys rejected: {sorted(extra)}")
+    return HANDLERS[tool](args)
