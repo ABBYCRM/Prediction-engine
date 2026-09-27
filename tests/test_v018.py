@@ -9,7 +9,7 @@ from prediction_engine.mcp import invoke
 
 
 def test_version_is_018():
-    assert __version__ == "0.18.0"
+    assert __version__ == "0.19.0"
 
 
 def test_ece_from_caller_scores_only(tmp_path):
