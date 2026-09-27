@@ -7,7 +7,7 @@ from prediction_engine.mcp import invoke
 
 
 def test_version_is_022():
-    assert __version__ == "0.22.0"
+    assert __version__ == "0.23.0"
 
 
 def test_analog_mean_hits_per_query(tmp_path):
