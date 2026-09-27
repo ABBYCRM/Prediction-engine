@@ -1,5 +1,13 @@
 # WORKLOG
 
+## 2026-09-27 04:00–04:30 EDT — cadence hour 4
+
+- Gate: America/New_York hour 4 ∈ {0,4,8,12,16,20}. Worked.
+- Touched only ABBYCRM/Prediction-engine. No DigitalOcean. No invented CPL/ROAS or other market numbers.
+- v0.21.0: MCP `research.list` indexes on-disk live_runs; `research.sources` lists public PI/SSDI URLs without fetching. Analog `hit_summary` adds `first_ts`. MCP `calibration.brier` exposes mean Brier only. Sheets still unwired. SMTP still dual-gated and not live.
+- xAI only at api.x.ai when XAI_API_KEY is set (unset this slice; no live LLM call).
+- Next slice: live Sheets only after tokens + Luis sign-off; live SMTP only after dual-gate + explicit send test; no DO.
+
 ## 2026-09-27 00:00–00:30 EDT — cadence hour 0
 
 - Gate: America/New_York hour 0 ∈ {0,4,8,12,16,20}. Worked.
