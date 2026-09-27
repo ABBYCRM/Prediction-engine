@@ -6,6 +6,7 @@ Records only caller-supplied p and y. Never invents CPL, ROAS, or market rates.
 from __future__ import annotations
 
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -38,6 +39,23 @@ def _as_label(value: Any) -> int:
 
 def brier(p: float, y: int) -> float:
     return (p - y) ** 2
+
+
+_LOGLOSS_EPS = 1e-15
+
+
+def log_loss(p: float, y: int) -> float:
+    """Binary log-loss on caller p,y only. Clipped to avoid log(0)."""
+    q = min(1.0 - _LOGLOSS_EPS, max(_LOGLOSS_EPS, float(p)))
+    if int(y) == 1:
+        return -math.log(q)
+    return -math.log(1.0 - q)
+
+
+def mean_log_loss(rows: list[dict]) -> float | None:
+    if not rows:
+        return None
+    return sum(log_loss(float(r["p"]), int(r["y"])) for r in rows) / len(rows)
 
 
 def record(
@@ -95,6 +113,7 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
         return {
             "count": 0,
             "mean_brier": None,
+            "mean_log_loss": None,
             "ece": None,
             "house": house,
             "invented_market": False,
@@ -105,6 +124,7 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
     return {
         "count": len(rows),
         "mean_brier": mean,
+        "mean_log_loss": mean_log_loss(rows),
         "ece": expected_calibration_error(buckets, n=len(rows)),
         "house": house,
         "invented_market": False,
