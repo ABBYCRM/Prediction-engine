@@ -7,7 +7,7 @@ from prediction_engine.mcp import invoke
 
 
 def test_version_is_023():
-    assert __version__ == "0.23.0"
+    assert __version__ == "0.24.0"
 
 
 def test_analog_max_hits_in_query(tmp_path):

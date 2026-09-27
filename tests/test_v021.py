@@ -7,7 +7,7 @@ from prediction_engine.research import sources_for
 
 
 def test_version_is_021():
-    assert __version__ == "0.23.0"
+    assert __version__ == "0.24.0"
 
 
 def test_research_sources_public_only():
