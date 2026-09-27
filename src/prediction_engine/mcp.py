@@ -50,6 +50,7 @@ ALLOWED_TOOLS: dict[str, set[str]] = {
     "research.sources": {"house"},
     "calibration.brier": {"house"},
     "calibration.means": {"house"},
+    "calibration.mae": {"house"},
 }
 
 
@@ -236,6 +237,18 @@ def _calibration_means(args: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _calibration_mae(args: dict[str, Any]) -> dict[str, Any]:
+    house = args.get("house")
+    house_s = str(house).strip() if house else None
+    stats = cal_summary(house=house_s)
+    return {
+        "house": house_s,
+        "count": stats.get("count"),
+        "mean_abs_error": stats.get("mean_abs_error"),
+        "invented_market": False,
+    }
+
+
 def _calibration_brier(args: dict[str, Any]) -> dict[str, Any]:
     house = args.get("house")
     house_s = str(house).strip() if house else None
@@ -317,6 +330,7 @@ HANDLERS: dict[str, ToolFn] = {
     "research.sources": _research_sources,
     "calibration.brier": _calibration_brier,
     "calibration.means": _calibration_means,
+    "calibration.mae": _calibration_mae,
 }
 
 
