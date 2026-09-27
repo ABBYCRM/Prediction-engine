@@ -79,6 +79,39 @@ def write_run(
     return dest
 
 
+def sources_for(house: str) -> tuple[str, ...]:
+    name = assert_single_house(house)
+    return PI_SOURCES if name == "pi" else SSDI_SOURCES
+
+
+def list_run_index(house: str | None = None) -> dict[str, Any]:
+    """Metadata only from on-disk live_runs. Does not invent market numbers."""
+    paths = list_runs(house)
+    rows: list[dict[str, Any]] = []
+    for path in paths:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        rows.append(
+            {
+                "path": path.name,
+                "house": data.get("house"),
+                "kind": data.get("kind"),
+                "as_of": data.get("as_of"),
+                "item_count": len(data.get("items") or []),
+            }
+        )
+    return {
+        "count": len(rows),
+        "runs": rows,
+        "house": house,
+        "invented_market": False,
+    }
+
+
 def list_runs(house: str | None = None) -> list[Path]:
     if not LIVE_DIR.exists():
         return []
