@@ -15,7 +15,7 @@ from prediction_engine.writeback import WritebackError
 
 
 def test_version_is_016():
-    assert __version__ == "0.19.0"
+    assert __version__ == "0.21.0"
 
 
 def test_brier_known_values():
