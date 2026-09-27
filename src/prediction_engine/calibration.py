@@ -114,17 +114,23 @@ def summary(path: Path | None = None, house: str | None = None) -> dict[str, Any
             "count": 0,
             "mean_brier": None,
             "mean_log_loss": None,
+            "mean_p": None,
+            "mean_y": None,
             "ece": None,
             "house": house,
             "invented_market": False,
             "buckets": reliability_buckets([]),
         }
     mean = sum(float(r["brier"]) for r in rows) / len(rows)
+    mean_p = sum(float(r["p"]) for r in rows) / len(rows)
+    mean_y = sum(int(r["y"]) for r in rows) / len(rows)
     buckets = reliability_buckets(rows)
     return {
         "count": len(rows),
         "mean_brier": mean,
         "mean_log_loss": mean_log_loss(rows),
+        "mean_p": mean_p,
+        "mean_y": mean_y,
         "ece": expected_calibration_error(buckets, n=len(rows)),
         "house": house,
         "invented_market": False,
